@@ -5,14 +5,16 @@
 #include <string.h>
 #include "../../commons/com/clserv.h"
 
+static int serv;
 
 int connect_to(char* hostname, char* port);
 int connect_to_server() {
-	return connect_to("127.0.0.1","5001");
+	serv = connect_to("127.0.0.1","5001");
+	return serv;
 }
 
 
-int send_packet(void* p, int size, int serv)
+int send_packet(void* p, int size )
 {	
 	printf("sending packet\n");
 	int sockfd = serv;
@@ -25,7 +27,7 @@ int send_packet(void* p, int size, int serv)
 	return n;
 }
 
-int recive_packet(void* p, int size,int serv)
+int receive_packet(void* p, int size )
 {
 	printf("receiving packet\n");
 	int sockfd = serv;

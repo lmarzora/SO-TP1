@@ -5,7 +5,8 @@
 #include <string.h>
 #include "../../commons/com/clserv.h"
 
-
+static int serv;
+static int cli;
 
 int creatServ()
 {
@@ -39,12 +40,14 @@ int creatServ()
 	}
 	listen(sockfd,5);
 	printf("server born\n");
-	return sockfd;
+	serv = sockfd;
+	return 1;
 }
 
-int receive_packet( void *p, int lim, int sockfd ) {
+int receive_packet( void *p, int lim ) {
 	
 	printf("receiving packet\n");
+	int sockfd = serv;
 	int clilen, newsockfd;
 	struct sockaddr_in cli_addr;
 	clilen = sizeof(cli_addr);
@@ -57,15 +60,14 @@ int receive_packet( void *p, int lim, int sockfd ) {
 	}
 	int qty = read(newsockfd,p,lim);
 	printf("packet received\n");
-	printf("qty = %d\n",qty);
-	return newsockfd;
+	cli = newsockfd;
+	return qty;
 }
 
-int send_packet( void*p , int qty , int cli) {
+int send_packet( void*p , int qty ) {
 	printf("sending packet\n");
 	int n = write(cli,p,qty);
 	close(cli);
-	printf(" n = %d\n" , n);	
 	return n;
 }
 

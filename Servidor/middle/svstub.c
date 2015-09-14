@@ -38,21 +38,21 @@ process_server ( CLSVBUFF*p,int qty )
 
 static
 void
-do_server( int serv )
+do_server()
 {
-	int qty,cli;
-	cli = receive_packet( &clsvbuff, sizeof( clsvbuff ), serv);
+	int qty;
+	qty = receive_packet( &clsvbuff, sizeof( clsvbuff ));
 	qty = process_server( &clsvbuff, qty );
-	send_packet( &clsvbuff, qty , cli);
+	send_packet( &clsvbuff, qty );
 
 }
 
 void
 main( void )
 {
-	int serv = creatServ();
+	creatServ();
 	forever
-		do_server(serv);
+		do_server();
 }
 
 

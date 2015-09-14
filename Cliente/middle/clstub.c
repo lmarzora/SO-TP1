@@ -10,13 +10,11 @@ int
 send_rcv( CLSVBUFF *p, int opcode, int qty )
 {
 	printf("sending rcv\n");
-	printf("%d",p);
 	int serv = connect_to_server();
-	int qtyrec;
-	int d;
+	int qtyrec, qtysent;
 	p->opc = opcode;
-	d = send_packet( p, qty + sizeof(OPC), serv);
-	qtyrec = recive_packet( p, sizeof( *p ), serv);
+	qtysent = send_packet( p, qty + sizeof(OPC), serv);
+	qtyrec = receive_packet( p, sizeof( *p ), serv);
 
 	int ret_opcode = p->opc;
 	if(ret_opcode = RET_CURAR) {
@@ -31,11 +29,6 @@ int curar_pokemones(POKEMON* pokemones,int cant) {
 
 	printf("curando\n");
 
-	int i = 0;	
-	for(i;i<cant;i++) {
-		printf("%d\n",pokemones[i].life);
-	}
-
 	CLSV_POKEMON_TRANSFER * ps;
 	SVCL_POKEMON_TRANSFER * pr;
 	
@@ -47,12 +40,7 @@ int curar_pokemones(POKEMON* pokemones,int cant) {
 	ps->id=1;
 	
 	send_rcv(&clsvbuff,CURAR,sizeof(CLSV_POKEMON_TRANSFER));
-	for(i=0;i<cant;i++) {
-		pokemones[i] = pr->pokemons[i];
-		printf("%s\n",pokemones[i].nick);
-		printf("%d\n",pokemones[i].life);
 
-	}
 }
 
 /* regalar , adoptar */

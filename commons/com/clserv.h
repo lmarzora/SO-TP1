@@ -42,11 +42,11 @@ typedef struct
 } CLSVBUFF;
 	
 int
-send_packet( void *p, int qty, int fd );
+send_packet( void *p, int qty );
 
 
 int
-receive_packet( void *p, int lim, int fd );
+receive_packet( void *p, int lim );
 
 
 int
