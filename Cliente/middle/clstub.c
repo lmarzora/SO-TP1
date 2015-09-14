@@ -13,8 +13,8 @@ send_rcv( CLSVBUFF *p, int opcode, int qty )
 	int serv = connect_to_server();
 	int qtyrec, qtysent;
 	p->opc = opcode;
-	qtysent = send_packet( p, qty + sizeof(OPC), serv);
-	qtyrec = receive_packet( p, sizeof( *p ), serv);
+	qtysent = send_packet( p, qty + sizeof(OPC));
+	qtyrec = receive_packet( p, sizeof( *p ));
 
 	int ret_opcode = p->opc;
 	if(ret_opcode = RET_CURAR) {
@@ -40,6 +40,11 @@ int curar_pokemones(POKEMON* pokemones,int cant) {
 	ps->id=1;
 	
 	send_rcv(&clsvbuff,CURAR,sizeof(CLSV_POKEMON_TRANSFER));
+
+  	memcpy(pokemones,ps->pokemons, cant*sizeof(POKEMON));
+
+  	return 1;
+
 
 }
 
