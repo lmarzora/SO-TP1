@@ -14,26 +14,20 @@ process_server ( CLSVBUFF*p,int qty )
 	int opcode;
 	opcode = p->opc;
 	if(opcode == CURAR) {
-		usleep(900000);
+		
 		CLSV_POKEMON_TRANSFER * pr;
 		pr = &clsvbuff.data.clsv_pokemon_transfer;
 		int cant = pr->cant;
 		POKEMON pokemones[cant];
 		memcpy(pokemones,pr->pokemons,cant*sizeof(POKEMON));
-		int i = 0;
-		for(i;i<cant;i++) {
-			printf("%s\n",pokemones[i].nick);
-			strcpy(pokemones[i].nick,"pepe");
-		}
+
+		int ok = curar_pokemones(pokemones, cant);
+
 		SVCL_POKEMON_TRANSFER * ps;
 		ps = &clsvbuff.data.svcl_pokemon_transfer;
 		memcpy(ps->pokemons,pokemones,cant*sizeof(POKEMON));
-		i = 0;
-		for(i;i<cant;i++) {
-			printf("%s\n",ps->pokemons[i].nick);
-		}
 		ps->cant=cant;
-		ps->ok=1;		
+		ps->ok=ok;		
 		p->opc=RET_CURAR;
 		
 	}

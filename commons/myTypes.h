@@ -18,15 +18,7 @@ typedef struct
 	int life;
 } POKEMON;
 
-typedef struct
-{
-	POKEMON p1;
-	POKEMON p2;
-	POKEMON p3;
-	POKEMON p4;
-	POKEMON p5;
-	POKEMON p6;
-}POKEMONS;
+
 
 typedef int CLIENT_ID;
 

@@ -11,7 +11,7 @@ send_rcv( CLSVBUFF *p, int opcode, int qty )
 {
 	printf("sending rcv\n");
 	printf("%d",p);
-	int serv = connect_to("127.0.0.1","5001");
+	int serv = connect_to_server();
 	int qtyrec;
 	int d;
 	p->opc = opcode;
@@ -27,9 +27,15 @@ send_rcv( CLSVBUFF *p, int opcode, int qty )
 	return qtyrec - sizeof ( OPC );
 }
 
-int curarPokemones(POKEMON* pokemones,int cant) {
+int curar_pokemones(POKEMON* pokemones,int cant) {
 
 	printf("curando\n");
+
+	int i = 0;	
+	for(i;i<cant;i++) {
+		printf("%d\n",pokemones[i].life);
+	}
+
 	CLSV_POKEMON_TRANSFER * ps;
 	SVCL_POKEMON_TRANSFER * pr;
 	
@@ -41,10 +47,11 @@ int curarPokemones(POKEMON* pokemones,int cant) {
 	ps->id=1;
 	
 	send_rcv(&clsvbuff,CURAR,sizeof(CLSV_POKEMON_TRANSFER));
-	int i = 0;	
-	for(i;i<cant;i++) {
+	for(i=0;i<cant;i++) {
 		pokemones[i] = pr->pokemons[i];
 		printf("%s\n",pokemones[i].nick);
+		printf("%d\n",pokemones[i].life);
+
 	}
 }
 

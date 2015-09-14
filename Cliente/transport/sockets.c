@@ -5,6 +5,13 @@
 #include <string.h>
 #include "../../commons/com/clserv.h"
 
+
+int connect_to(char* hostname, char* port);
+int connect_to_server() {
+	return connect_to("127.0.0.1","5001");
+}
+
+
 int send_packet(void* p, int size, int serv)
 {	
 	printf("sending packet\n");

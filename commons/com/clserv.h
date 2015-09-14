@@ -50,9 +50,10 @@ receive_packet( void *p, int lim, int fd );
 
 
 int
-connect_to(char*,char*);
+connect_to_server(void);
 
-
+int
+creatServ(void);
 
 
 

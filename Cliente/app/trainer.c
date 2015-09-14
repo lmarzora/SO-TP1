@@ -21,7 +21,7 @@ int main(){
 		printf("Qué desea hacer?\n");
 		bzero(buffer, 256);
 		fgets(buffer, 255, stdin);
-		curarPokemones(pokemones, 6);
+		curar_pokemones(pokemones, 6);
 	
   }
 
