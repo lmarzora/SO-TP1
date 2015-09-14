@@ -14,7 +14,7 @@ process_server ( CLSVBUFF*p,int qty )
 	int opcode;
 	opcode = p->opc;
 	if(opcode == CURAR) {
-		usleep(500000);
+		usleep(900000);
 		CLSV_POKEMON_TRANSFER * pr;
 		pr = &clsvbuff.data.clsv_pokemon_transfer;
 		int cant = pr->cant;

@@ -23,7 +23,7 @@ send_rcv( CLSVBUFF *p, int opcode, int qty )
 		printf("pokemones curados\n");
 		
 	}
-
+	close(serv);
 	return qtyrec - sizeof ( OPC );
 }
 
@@ -43,7 +43,8 @@ int curarPokemones(POKEMON* pokemones,int cant) {
 	send_rcv(&clsvbuff,CURAR,sizeof(CLSV_POKEMON_TRANSFER));
 	int i = 0;	
 	for(i;i<cant;i++) {
-		printf("%s\n",pr->pokemons[i].nick);
+		pokemones[i] = pr->pokemons[i];
+		printf("%s\n",pokemones[i].nick);
 	}
 }
 

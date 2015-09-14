@@ -22,7 +22,7 @@ int main(){
 		bzero(buffer, 256);
 		fgets(buffer, 255, stdin);
 		curarPokemones(pokemones, 6);
-		
+	
   }
 
 }
