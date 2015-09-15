@@ -11,10 +11,26 @@ send_rcv( CLSVBUFF *p, int opcode, int qty )
 {
 	printf("sending rcv\n");
 	int serv = connect_to_server();
+	
+	if( serv<0 ) {
+	//ERROR 
+		return -1;
+
+	}
+	
 	int qtyrec, qtysent;
 	p->opc = opcode;
-	qtysent = send_packet( p, qty + sizeof(OPC), serv);
-	qtyrec = receive_packet( p, sizeof( *p ), serv);
+	qtysent = send_packet( p, qty + sizeof(OPC));
+	
+	if ( qtysent < 0 ) {
+	//ERROR
+		return -1;
+	}
+	qtyrec = receive_packet( p, sizeof( *p ));
+	if ( qtyrec < 0 ) {
+	//ERROR
+		return -1;
+	}
 
 	int ret_opcode = p->opc;
 	if(ret_opcode = RET_CURAR) {

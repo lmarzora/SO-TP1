@@ -42,15 +42,28 @@ do_server()
 {
 	int qty;
 	qty = receive_packet( &clsvbuff, sizeof( clsvbuff ));
+	if(qty < 0) {
+	//ERROR
+		return -1;	
+	}
 	qty = process_server( &clsvbuff, qty );
 	send_packet( &clsvbuff, qty );
+	if(qty < 0) {
+	//ERROR
+		return -1;	
+	}
 
 }
 
 void
 main( void )
 {
-	creatServ();
+	int ok = creatServ();
+	if(ok<0) {
+	//ERROR
+		return -1;		
+	}
+		
 	forever
 		do_server();
 }

@@ -21,7 +21,7 @@ int creatServ()
 	if (sockfd < 0)
 	{
 		perror("ERROR opening socket");
-		exit(1);
+		return -1;;
 	}
    
 /* Initialize socket structure */
@@ -36,7 +36,7 @@ int creatServ()
 	if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
 	{
 		perror("ERROR on binding");
-		exit(1);
+		return -2;
 	}
 	listen(sockfd,5);
 	printf("server born\n");
@@ -56,7 +56,7 @@ int receive_packet( void *p, int lim ) {
 	if (newsockfd < 0)
 	{
 		perror("ERROR on accept");
-		exit(1);
+		return -1;
 	}
 	int qty = read(newsockfd,p,lim);
 	printf("packet received\n");

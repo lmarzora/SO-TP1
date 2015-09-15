@@ -22,7 +22,7 @@ int send_packet(void* p, int size )
 	if (n < 0)
    {
       perror("ERROR writing to socket");
-      exit(1);
+      return -1;
    }
 	return n;
 }
@@ -35,10 +35,10 @@ int receive_packet(void* p, int size )
 	if (n < 0)
    {
       perror("ERROR reading from socket");
-      exit(1);
+      return -1;
    }
 
-	return 1;
+	return n;
 
 }
 
@@ -57,13 +57,13 @@ int connect_to(char* hostname, char* port) {
   	 if (sockfd < 0)
   	 {
   	    perror("ERROR opening socket");
-  	    exit(1);
+  	    return -1;
   	 }
 	 server = gethostbyname(hostname);
    
 	if (server == NULL) {
 		fprintf(stderr,"ERROR, no such host\n");
-		exit(0);
+		return -2;
 	}
 	   
 	   bzero((char *) &serv_addr, sizeof(serv_addr));
