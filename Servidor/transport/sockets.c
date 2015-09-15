@@ -72,7 +72,11 @@ int send_packet( void*p , int qty ) {
 }
 
 
-
+int killServer()
+{
+	close(serv);
+	exit(1);
+}
 
 
 
