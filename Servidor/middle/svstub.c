@@ -1,4 +1,4 @@
-
+#include<signal.h>
 #include<string.h>
 #include "../../commons/com/clserv.h"
 #include "../../commons/API.h"
@@ -52,6 +52,7 @@ main( void )
 {
 	
 	creatServ();
+	signal(SIGINT,killServer);
 	forever
 		do_server();
 }
