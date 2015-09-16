@@ -38,4 +38,8 @@ typedef struct
 
 typedef int CLIENT_ID;
 
-
+typedef struct
+{
+	POKEMON pokemons[6];
+	int cant;
+}TRAY;

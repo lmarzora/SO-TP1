@@ -1,15 +1,31 @@
-
+#include "../../commons/com/clsv.h"
+#include "../../commons/API.h"
+#include<stdlib.h>
+#include<fcntl.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<semaphore.h>
+#include<pthread.h>
+#include <sys/stat.h>
 
 static char* nurseS;
 static char* nurseR;
 
-pthread_t ntid[3];
-pthread_mutex_t 
-sem_t nursePillow, pillow , healingMachine, pipeS , pipeR;
+static pthread_t ntid[3];
+static sem_t nursePillow, pillow , healingMachine, pipeS , pipeR;
+
+
+int processPacket(PACKET*);
+void createNurses();
+void doServer();
+void handleConnection(CONNECTION);
+void doNurse();
+void* nurse();
+void fatal(char*);
 
 int main (void )
 {
-	createNurses()
+	createNurses();
 	createServer();
 
 	while(1)
@@ -19,7 +35,7 @@ int main (void )
 
 }
 
-void createNurse() 
+void createNurses() 
 {		
 	char* nurseS = "/tmp/nurseS";
 	if ( access(nurseS, 0) == -1 && mknod(nurseS, S_IFIFO|0666, 0) == -1 )
@@ -39,15 +55,15 @@ void createNurse()
 			sem_init(&pipeR,1,1);
 
 			for( i = 0 ; i < 3 ; i++ )
-				pthread_create(	&ntid[i] , NULL , &nurse , NULL );
+				pthread_create(	&(ntid[i]) , NULL , &nurse , NULL );
 		}
 		
 	return ;
 }
 
-void nurse()
+void* nurse()
 {
-	while 1
+	while(1)
 		doNurse();
 }
 
@@ -55,26 +71,27 @@ void nurse()
 void doNurse()
 {
 
+	TRAY tray;
 	sem_wait(&nursePillow);
 
 	int rfd, wfd;
 	
 	//read from nurseR
 	
-	rfd = fopen(nurseR,O_RDONLY);
+	rfd = open(nurseR,O_RDONLY);
 	int n;
-	n = read(rfd,&tray,sizeof TRAY);
-	fclose(rfd);
+	n = read(rfd,&tray,sizeof(TRAY));
+	close(rfd);
 	sem_post(&pipeS);
 	//heal
-	nurseHeal(&tray,sizeof Tray);
+	heal(&tray,sizeof(TRAY));
 	
 	//write in nurseS
 
-	sem_wait(pipeR);
-	wfd = fopen(nurseS,O_WRONLY);
-	n = write(wfd,&tray,sizeof TRAY);
-	fclose(wfd);
+	sem_wait(&pipeR);
+	wfd = open(nurseS,O_WRONLY);
+	n = write(wfd,&tray,sizeof(TRAY));
+	close(wfd);
 
 	
 	sem_post(&pillow);
@@ -96,19 +113,20 @@ void doServer()
 
 void handleConnection( CONNECTION c )
 {
+	PACKET p;
 	//transport
-	receivePacket( c , &p , sizeof PACKET );
-	processPacket( p );
+	receivePacket( c , &p , sizeof(PACKET) );
+	processPacket( &p );
 	//transport
-	sendPacket( c , &p , sizeof PACKET );
+	sendPacket( c , &p , sizeof(PACKET) );
 	closeConnection( c );
 	exit(1);
 }
 
-void processPacket( PACKET* p )
+int processPacket( PACKET* p )
 {
 	int opc = p->opc;
-
+	TRAY tray;
 	switch( opc ) 
 	{
 		case CURAR:
@@ -119,22 +137,22 @@ void processPacket( PACKET* p )
 			//write nurseR;
 
 			sem_wait(&pipeS);
-			wfd = fopen(nurseR,O_WRONLY);
-			write(wfd,&tray,sizeof TRAY);
-			fclose(wfd);
+			wfd = open(nurseR,O_WRONLY);
+			write(wfd,&tray,sizeof(TRAY));
+			close(wfd);
 
 			sem_post(&nursePillow);
 			sem_wait(&pillow);
 			
 			//read nurseS;
 
-			rfd = fopen(nurseS,O_RDONLY);
-			read(rfd,&tray,sizeof TRAY);
-			fclose(rfd);
+			rfd = open(nurseS,O_RDONLY);
+			read(rfd,&tray,sizeof(TRAY));
+			close(rfd);
 			sem_post(&pipeR);
 			sem_post(&healingMachine);
 			
-}			break;
+			break;
 		}
 		case ADOPTAR:
 		{
@@ -151,4 +169,11 @@ void processPacket( PACKET* p )
 			//error;
 		}
 	}
+}
+
+void
+fatal(char *s)
+{
+	perror(s);
+	exit(1);
 }

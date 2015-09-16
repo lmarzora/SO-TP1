@@ -3,7 +3,7 @@
 .SILENT:
 
 TARGET = server
-OBJS = ./app/pokemonCenter.o ./middle/svstub.o
+OBJS = ./app/pokemonCenter.o ./middle/server.o
 SOCKETS = ./transport/sockets.o
 PIPES = ./transport/pipes.o
 CC = gcc
