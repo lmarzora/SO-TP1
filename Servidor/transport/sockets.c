@@ -3,13 +3,15 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <string.h>
-#include "../../commons/com/clserv.h"
+#include<unistd.h>
+#include "../../commons/com/clsv.h"
+#include<signal.h>
 
 static int serv;
-static int cli;
 
-int creatServ()
+void createServer()
 {
+
 	printf("creating serv\n");
 	int sockfd, portno;
 	char buffer[256];
@@ -21,7 +23,7 @@ int creatServ()
 	if (sockfd < 0)
 	{
 		perror("ERROR opening socket");
-		return -1;;
+		exit(1);
 	}
    
 /* Initialize socket structure */
@@ -36,44 +38,61 @@ int creatServ()
 	if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
 	{
 		perror("ERROR on binding");
-		return -2;
+		exit(1);
 	}
 	listen(sockfd,5);
 	printf("server born\n");
 	serv = sockfd;
-	return 1;
+	
+	if(signal(SIGINT,killServer)== SIG_ERR)
+		printf("error catching sigint\n");
+
+	return ;
 }
 
-int receive_packet( void *p, int lim ) {
-	
-	printf("receiving packet\n");
+
+
+
+void acceptConnection(CONNECTION* c)
+{
+	printf("listening\n");
 	int sockfd = serv;
-	int clilen, newsockfd;
+	int clilen;
 	struct sockaddr_in cli_addr;
 	clilen = sizeof(cli_addr);
 
-	newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-	if (newsockfd < 0)
+	c->sockfd = accept(serv, (struct sockaddr *) &cli_addr, &clilen);
+	if (c->sockfd < 0)
 	{
 		perror("ERROR on accept");
-		return -1;
+		exit(1);
 	}
-	int qty = read(newsockfd,p,lim);
+
+
+}
+
+int receivePacket(CONNECTION* c, PACKET *p, int lim ) {
+	int qty = read(c->sockfd,p,lim);
 	printf("packet received\n");
-	cli = newsockfd;
 	return qty;
 }
 
-int send_packet( void*p , int qty ) {
+int sendPacket(CONNECTION* c, PACKET *p , int qty ) {
 	printf("sending packet\n");
-	int n = write(cli,p,qty);
-	close(cli);
+	int n = write(c->sockfd,p,qty);
 	return n;
 }
 
-
-int killServer()
+int closeConnection(CONNECTION* c)
 {
+	close(c->sockfd);
+	printf("socket closed\n");
+	return 1;
+}
+
+void killServer(int signo)
+{
+	printf("hasta la vista\n");
 	close(serv);
 	exit(1);
 }

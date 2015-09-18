@@ -38,7 +38,8 @@ int curar_pokemones(POKEMON* pokemones,int cant) {
 	memcpy(ps->pokemons,pokemones,cant*sizeof(POKEMON));
 	ps->cant=cant;
 	ps->id=1;
-	
+
+		
 	send_rcv(&clsvbuff,CURAR,sizeof(CLSV_POKEMON_TRANSFER));
 
   	memcpy(pokemones,ps->pokemons, cant*sizeof(POKEMON));

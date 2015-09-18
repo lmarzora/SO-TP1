@@ -1,2 +1,2 @@
 
-int heal(TRAY*,int);
+int heal(TRAY*);

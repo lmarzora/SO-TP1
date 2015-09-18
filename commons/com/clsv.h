@@ -47,11 +47,11 @@ typedef struct
 
 
 
-int sendPacket(CONNECTION c, PACKET* , int );
-int receivePacket(CONNECTION c, PACKET*, int);
-int closeConnection(CONNECTION);
-CONNECTION acceptConnection(void);
+int sendPacket(CONNECTION* c, PACKET* , int );
+int receivePacket(CONNECTION* c, PACKET*, int);
+int closeConnection(CONNECTION*);
+void acceptConnection(CONNECTION*);
 void createServer();
-
+void killServer(int);
 
 

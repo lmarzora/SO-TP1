@@ -9,13 +9,14 @@ PIPES = ./transport/pipes.o
 CC = gcc
 LD = $(CC)
 LDOPTS = -o
+LIBS = -lpthread
 
 
 $(TARGET):
 sockets: $(OBJS) $(SOCKETS)
-	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SOCKETS)
+	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SOCKETS) $(LIBS)
 pipes: $(OBJS) $(PIPES)
-	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(PIPES)
+	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(PIPES) $(LIBS)
 
 clean:
 	rm -rf *.o $(TARGET)
