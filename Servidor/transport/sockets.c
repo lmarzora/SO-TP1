@@ -92,7 +92,7 @@ int closeConnection(CONNECTION* c)
 
 void killServer(int signo)
 {
-	printf("hasta la vista\n");
+	printf("killing server\n");
 	close(serv);
 	exit(1);
 }

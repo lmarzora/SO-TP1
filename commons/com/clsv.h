@@ -1,5 +1,5 @@
 
-
+#include<pthread.h>
 #include "../myTypes.h"
 
 enum
@@ -45,6 +45,14 @@ typedef struct
 
 }PACKET;
 
+
+
+typedef struct
+{
+	POKEMON pokemons[6];
+	int cant;
+	pthread_t id;
+}TRAY;
 
 
 int sendPacket(CONNECTION* c, PACKET* , int );
