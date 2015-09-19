@@ -97,7 +97,7 @@ void doNurse()
 	printf("done reading thread: %d\n",pthread_self());
 	sem_post(&pipeS);
 	//heal
-	heal(&tray);
+	curar_pokemones(tray.pokemons,tray.cant);
 	
 	//write in nurseS
 	printf("writing on nurseS thread: %d\n",pthread_self());

@@ -12,9 +12,3 @@ int curar_pokemones(POKEMON *pokemones, int cant){
 	return 1;
 }
 
-int heal(TRAY* tray) {
-	printf("healing\n");
-	curar_pokemones(tray->pokemons,tray->cant);
-
-
-}

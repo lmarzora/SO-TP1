@@ -1,2 +1,2 @@
 
-int heal(TRAY*);
+int curar_pokemones(POKEMON*,int);
