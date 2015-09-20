@@ -9,7 +9,8 @@ static
 int
 send_rcv( CLSVBUFF *p, int opcode, int qty )
 {
-	printf("sending rcv\n");
+	//COMENTDEBUG
+	//printf("sending rcv\n");
 	int serv = connect_to_server();
 	int qtyrec, qtysent;
 	p->opc = opcode;
@@ -18,7 +19,8 @@ send_rcv( CLSVBUFF *p, int opcode, int qty )
 
 	int ret_opcode = p->opc;
 	if(ret_opcode = RET_CURAR) {
-		printf("pokemones curados\n");
+		//COMENTDEBUG
+		//printf("pokemones curados\n");
 		
 	}
 	close(serv);
@@ -26,8 +28,8 @@ send_rcv( CLSVBUFF *p, int opcode, int qty )
 }
 
 int curar_pokemones(POKEMON* pokemones,int cant) {
-
-	printf("curando\n");
+	//COMENTDEBUG
+	//printf("curando\n");
 
 	CLSV_POKEMON_TRANSFER * ps;
 	SVCL_POKEMON_TRANSFER * pr;

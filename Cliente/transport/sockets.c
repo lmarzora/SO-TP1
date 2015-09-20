@@ -16,7 +16,8 @@ int connect_to_server() {
 
 int send_packet(void* p, int size )
 {	
-	printf("sending packet\n");
+	//COMENTDEBUG
+	//printf("sending packet\n");
 	int sockfd = serv;
 	int n = write(sockfd,p,size);
 	if (n < 0)
@@ -29,7 +30,8 @@ int send_packet(void* p, int size )
 
 int receive_packet(void* p, int size )
 {
-	printf("receiving packet\n");
+	//COMENTDEBUG
+	//printf("receiving packet\n");
 	int sockfd = serv;
 	int n = read(sockfd, p,size);
 	if (n < 0)
