@@ -81,7 +81,10 @@ int connect_to(char* hostname, char* port) {
 }
 
 
-
+void close_server(){
+	close(serv);
+	return;
+}
 
 
 

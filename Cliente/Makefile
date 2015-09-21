@@ -5,7 +5,7 @@
 TARGET = trainer
 OBJS = ./app/trainer.o ./middle/clstub.o
 SOCKETS = ./transport/sockets.o
-PIPES = ./transport/pipes.o
+PIPES = ./transport/fifos.o
 CC = gcc
 LD = $(CC)
 LDOPTS = -o

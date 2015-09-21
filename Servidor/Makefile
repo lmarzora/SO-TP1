@@ -5,7 +5,7 @@
 TARGET = server
 OBJS = ./app/pokemonCenter.o ./middle/server.o
 SOCKETS = ./transport/sockets.o
-PIPES = ./transport/pipes.o
+PIPES = ./transport/fifos.o
 CC = gcc
 LD = $(CC)
 LDOPTS = -o
