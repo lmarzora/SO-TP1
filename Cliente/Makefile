@@ -9,19 +9,14 @@ PIPES = ./transport/fifos.o
 CC = gcc
 LD = $(CC)
 LDOPTS = -o
-
-
-
+LIBS = -lpthread
 
 
 $(TARGET):
 sockets: $(OBJS) $(SOCKETS)
-	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SOCKETS)
+	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SOCKETS) $(LIBS)
 pipes: $(OBJS) $(PIPES)
-	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(PIPES)
-
-
-trainer.o:	../commons/myTypes.h
+	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(PIPES) $(LIBS)
 
 clean:
 	rm -rf *.o $(TARGET)

@@ -34,7 +34,8 @@ typedef union
 
 typedef union
 {
-	int sockfd;	
+	int sockfd;
+	int pipes[2];
 
 }CONNECTION;
 
