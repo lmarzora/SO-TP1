@@ -23,7 +23,8 @@ send_rcv( CLSVBUFF *p, int opcode, int qty )
 		//printf("pokemones curados\n");
 		
 	}
-	close_server();
+	//close_server();
+	//close(serv);
 	return qtyrec - sizeof ( OPC );
 }
 
