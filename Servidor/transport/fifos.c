@@ -1,5 +1,5 @@
 //fifos.c
-#include "../../commons/com/clsv.h"
+#include "../../commons/com.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <semaphore.h>
+#include<unistd.h>
 
 const static char* listener = "/tmp/listener";
 const static char* clsv = "/tmp/clsv";
@@ -33,39 +34,31 @@ void createServer(){
 	printf("server born\n");
 
 
-
-	if(signal(SIGPIPE,killServer)== SIG_ERR)
-		printf("error catching sigpipe\n");
 	return;
 }
 
 
-int sendPacket(CONNECTION *c, PACKET *p, int lim){
+int sendPacket(CONNECTION *c, PACKET *p,int size){
 	printf("sending packet\n");
 	int n;
 	char fifoS[35];
 	sprintf(fifoS,"/tmp/svcl-%d",c->pid);
 	printf("%s\n",fifoS);
 	int fdS = open(fifoS,O_WRONLY);
-	n = write(fdS,p,lim);
+	n = write(fdS,p,size);
 	close(fdS);
 	return n;
 }
 
-int receivePacket(CONNECTION* c, PACKET *p, int lim){
+int receivePacket(CONNECTION* c, PACKET *p, int size){
 	int qty;
 
 	char fifoR[35];
 	sprintf(fifoR,"/tmp/clsv-%d",c->pid);
 	printf("%s\n",fifoR);
 	int fdR = open(fifoR,O_RDONLY);
-	qty = read(fdR,p,lim);
+	qty = read(fdR,p,sizeof(PACKET));
 	close(fdR);
-
-//	if(signal(SIGPIPE,SIG_IGN)== SIG_ERR)
-//		printf("error catching sigpipe\n");
-
-
 
 
 	printf("packet received\n");
@@ -73,20 +66,9 @@ int receivePacket(CONNECTION* c, PACKET *p, int lim){
 }
 
 
-int closeConnection(CONNECTION *c){
+int endConnection(CONNECTION *c){
 
-	/*
-	printf("pipes closed\n");
-	
-	char fifoS[35], fifoR[35];
-	sprintf(fifoR,"/tmp/clsv-%d",c->pid);
-	printf("%s\n",fifoS);
-	sprintf(fifoS,"/tmp/svcl-%d",c->pid);
-	printf("%s\n",fifoR);
-	
-	remove(fifoS);
-	remove(fifoR);
-	*/
+
 	return 1;
 }
 

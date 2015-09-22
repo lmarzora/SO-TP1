@@ -1,7 +1,6 @@
+#include "myTypes.h"
 
-#include<pthread.h>
-#include "../myTypes.h"
-
+typedef int OPC;
 enum
 {
 	CURAR = 0 , REGALAR = 1, ADOPTAR = 2, RET_CURAR=3
@@ -29,9 +28,6 @@ typedef union
 } DATA;
 
 
-
-
-
 typedef union
 {
 	int sockfd;
@@ -48,20 +44,9 @@ typedef struct
 }PACKET;
 
 
+int sendPacket(CONNECTION* c, PACKET*,int);
+int receivePacket(CONNECTION* c, PACKET*,int);
+int endConnection(CONNECTION*);
 
-typedef struct
-{
-	POKEMON pokemons[6];
-	int cant;
-	pthread_t id;
-}TRAY;
-
-
-int sendPacket(CONNECTION* c, PACKET* , int );
-int receivePacket(CONNECTION* c, PACKET*, int);
-int closeConnection(CONNECTION*);
-void acceptConnection(CONNECTION*);
-void createServer();
-void killServer(int);
-
+void die(int);
 

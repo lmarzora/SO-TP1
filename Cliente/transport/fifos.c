@@ -1,5 +1,5 @@
 //fifos.c
-#include "../../commons/com/clserv.h"
+#include "../../commons/com.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include<semaphore.h>
+#include<unistd.h>
 
 static int pid, n;
 
@@ -19,7 +20,7 @@ static char svcl[35];
 char semName[35];
 
 
-int connect_to_server() {
+int requestConnection(CONNECTION* c) {
 	if((serv = open(serverl, O_WRONLY)) == -1)
 		perror("ERROR connecting");
 	
@@ -48,11 +49,12 @@ int connect_to_server() {
 	sem_close(sem);
 	sem_unlink(semName);
 	
+	c->pid = pid;
 	return 1;
 }
 
 
-int send_packet(void* p, int size ){
+int sendPacket(CONNECTION* c, PACKET* p,int size){
 	printf("sending packet\n");
 	int fdS = open(clsv,O_WRONLY);
 	if(fdS < 0 )
@@ -69,7 +71,7 @@ int send_packet(void* p, int size ){
 	return n;
 }
 
-int receive_packet(void* p, int size ){
+int receivePacket(CONNECTION* c, PACKET* p,int size){
 	printf("receiving packet\n");
 	int fdR = open(svcl,O_RDONLY);
 	n = read(fdR, p,size);
@@ -83,18 +85,12 @@ int receive_packet(void* p, int size ){
 }
 
 
-void close_server(){
-	//close(fdClSv); //si hago esto el servidor muere despues de curar
-	//close(fdSvCl);
-	return;
-}
-void killClient(int sig)
+int endConnection(CONNECTION* c)
 {
 	remove(semName);
 	remove(clsv);
 	remove(svcl);
-	exit(1);
-	
+	return 1;
 }
 
 

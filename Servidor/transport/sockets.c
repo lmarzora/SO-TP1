@@ -4,7 +4,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include<unistd.h>
-#include "../../commons/com/clsv.h"
+#include "../../commons/com.h"
 #include<signal.h>
 
 static int serv;
@@ -69,19 +69,19 @@ void acceptConnection(CONNECTION* c)
 
 }
 
-int receivePacket(CONNECTION* c, PACKET *p, int lim ) {
-	int qty = read(c->sockfd,p,lim);
+int receivePacket(CONNECTION* c, PACKET *p, int size) {
+	int qty = read(c->sockfd,p,size);
 	printf("packet received\n");
 	return qty;
 }
 
-int sendPacket(CONNECTION* c, PACKET *p , int qty ) {
+int sendPacket(CONNECTION* c, PACKET *p, int size) {
 	printf("sending packet\n");
-	int n = write(c->sockfd,p,qty);
+	int n = write(c->sockfd,p,size);
 	return n;
 }
 
-int closeConnection(CONNECTION* c)
+int endConnection(CONNECTION* c)
 {
 	close(c->sockfd);
 	printf("socket closed\n");
@@ -91,8 +91,7 @@ int closeConnection(CONNECTION* c)
 void killServer(int signo)
 {
 	printf("killing server\n");
-	close(serv);
-	exit(1);
+	shutdown(serv,2);
 }
 
 

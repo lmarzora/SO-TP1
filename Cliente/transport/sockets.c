@@ -3,22 +3,23 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <string.h>
-#include "../../commons/com/clserv.h"
+#include "../../commons/com.h"
+#include<unistd.h>
 
-static int serv;
 
 int connect_to(char* hostname, char* port);
-int connect_to_server() {
-	serv = connect_to("127.0.0.1","5001");
-	return serv;
+
+int requestConnection(CONNECTION*c) {
+	int serv = connect_to("127.0.0.1","5001");
+	c->sockfd = serv;
+	return 1;
 }
 
 
-int send_packet(void* p, int size )
+int sendPacket(CONNECTION* c, PACKET* p, int size)
 {	
-	//COMENTDEBUG
-	//printf("sending packet\n");
-	int sockfd = serv;
+	printf("sending packet\n");
+	int sockfd = c->sockfd;
 	int n = write(sockfd,p,size);
 	if (n < 0)
    {
@@ -28,12 +29,11 @@ int send_packet(void* p, int size )
 	return n;
 }
 
-int receive_packet(void* p, int size )
+int receivePacket(CONNECTION* c, PACKET* p,int size)
 {
-	//COMENTDEBUG
-	//printf("receiving packet\n");
-	int sockfd = serv;
-	int n = read(sockfd, p,size);
+	printf("receiving packet\n");
+	int sockfd = c->sockfd;
+	int n = read(sockfd,p,size);
 	if (n < 0)
    {
       perror("ERROR reading from socket");
@@ -82,18 +82,13 @@ int connect_to(char* hostname, char* port) {
 	return sockfd;
 }
 
-
-void close_server(){
-	close(serv);
-	return;
-}
-
-
-void killClient(int sig)
+int endConnection(CONNECTION* c)
 {
-	close(serv);
-	
+	shutdown(c->sockfd,2);
+
 }
+
+
 
 
 

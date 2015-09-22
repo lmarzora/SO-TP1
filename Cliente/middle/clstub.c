@@ -1,49 +1,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../../commons/com/clserv.h"
+#include "../../commons/com.h"
 
-static CLSVBUFF clsvbuff;
+static PACKET p;
+static CONNECTION c;
+
+int requestConnection(CONNECTION*);
+int endConnection(CONNECTION*);
 
 static
 int
-send_rcv( CLSVBUFF *p, int opcode, int qty )
+send_rcv(int opcode, int size)
 {
 	//COMENTDEBUG
 	//printf("sending rcv\n");
-	int serv = connect_to_server();
+	int s = requestConnection(&c);
 	int qtyrec, qtysent;
-	p->opc = opcode;
-	qtysent = send_packet( p, qty + sizeof(OPC));
-	qtyrec = receive_packet( p, sizeof( *p ));
-
-	int ret_opcode = p->opc;
+	p.opc = opcode;
+	qtysent = sendPacket(&c, &p, size + sizeof(opcode));
+	qtyrec = receivePacket(&c, &p, sizeof(PACKET));
+	endConnection(&c);
+	int ret_opcode = p.opc;
 	if(ret_opcode = RET_CURAR) {
 		//COMENTDEBUG
 		//printf("pokemones curados\n");
 		
 	}
-	//close_server();
-	//close(serv);
+
 	return qtyrec - sizeof ( OPC );
 }
 
+void killClient(int sig) {
+	endConnection(&c);	
+	exit(1);
+}
+
+
 int curar_pokemones(POKEMON* pokemones,int cant) {
-	//COMENTDEBUG
-	//printf("curando\n");
 
 	CLSV_POKEMON_TRANSFER * ps;
 	SVCL_POKEMON_TRANSFER * pr;
 	
-	ps = &clsvbuff.data.clsv_pokemon_transfer;
-	pr = &clsvbuff.data.svcl_pokemon_transfer;
+	ps = &p.data.clsv_pokemon_transfer;
+	pr = &p.data.svcl_pokemon_transfer;
 
 	memcpy(ps->pokemons,pokemones,cant*sizeof(POKEMON));
 	ps->cant=cant;
 	ps->id=1;
 
 		
-	send_rcv(&clsvbuff,CURAR,sizeof(CLSV_POKEMON_TRANSFER));
+	send_rcv(CURAR,sizeof(CLSV_POKEMON_TRANSFER));
 
   	memcpy(pokemones,ps->pokemons, cant*sizeof(POKEMON));
 
@@ -51,6 +58,8 @@ int curar_pokemones(POKEMON* pokemones,int cant) {
 
 
 }
+
+
 
 /* regalar , adoptar */
 

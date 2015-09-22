@@ -1,5 +1,6 @@
-#include "../../commons/com/clsv.h"
+#include "../../commons/com.h"
 #include "../../commons/API.h"
+#include "server.h"
 #include<stdlib.h>
 #include<fcntl.h>
 #include<stdio.h>
@@ -139,11 +140,11 @@ void* handleConnection(void* s)
 	pthread_mutex_unlock(&connectionMutex);
 	PACKET p;
 	//transport
-	receivePacket( &c , &p , sizeof(PACKET) );
-	processPacket( &p );
+	receivePacket( &c , &p, sizeof(PACKET));
+	int size = processPacket( &p );
 	//transport
-	sendPacket( &c , &p , sizeof(PACKET) );
-	closeConnection( &c );
+	sendPacket( &c , &p, size);
+	endConnection( &c );
 	int ret = 1;
 	//printf("die thread die\n");
 	pthread_exit(&ret);
@@ -218,6 +219,7 @@ int processPacket( PACKET* p )
 				
 
 			memcpy(pr->pokemons,tray.pokemons,tray.cant*sizeof(POKEMON));
+			p->opc = RET_CURAR;
 			
 			break;
 		}
@@ -236,6 +238,7 @@ int processPacket( PACKET* p )
 			//error;
 		}
 	}
+	return sizeof(SVCL_POKEMON_TRANSFER) + sizeof(opc);
 }
 
 void endServer(int sig)
@@ -243,6 +246,7 @@ void endServer(int sig)
 	remove(nurseS);	
 	remove(nurseR);
 	killServer(sig);
+	exit(1);
 }
 
 void
