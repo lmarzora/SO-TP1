@@ -35,9 +35,10 @@ typedef union
 typedef union
 {
 	int sockfd;
-	int pipes[2];
+	int pid;
 
 }CONNECTION;
+
 
 typedef struct
 {

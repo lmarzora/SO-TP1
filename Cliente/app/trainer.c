@@ -3,15 +3,20 @@
 #include <time.h>
 #include <string.h>
 #include "../../commons/myTypes.h"
+#include "../../commons/API.h"
+#include<signal.h>
+
 #define forever while(1)
 
 void generatePokemons(POKEMON pokemones[6]);
 void printPokemons(POKEMON pokemones[6]);
 void printLogo();
 void printHelp();
+void killClient(int);
 
 int main(){
 
+	signal(SIGINT,killClient);
 	POKEMON pokemones[6];
 	generatePokemons(pokemones);
 

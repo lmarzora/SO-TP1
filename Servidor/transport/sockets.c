@@ -44,8 +44,6 @@ void createServer()
 	printf("server born\n");
 	serv = sockfd;
 	
-	if(signal(SIGINT,killServer)== SIG_ERR)
-		printf("error catching sigint\n");
 
 	return ;
 }

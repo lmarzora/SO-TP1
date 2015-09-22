@@ -89,7 +89,11 @@ void close_server(){
 }
 
 
-
+void killClient(int sig)
+{
+	close(serv);
+	
+}
 
 
 

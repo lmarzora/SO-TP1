@@ -8,7 +8,7 @@
 #include<pthread.h>
 #include <sys/stat.h>
 #include<string.h>
-
+#include<signal.h>
 
 static char* nurseS;
 static char* nurseR;
@@ -30,9 +30,11 @@ void doNurse();
 void* nurse();
 void fatal(char*);
 void done(int);
+void endServer(int);
 
 int main (void )
 {
+	signal(SIGINT,endServer);
 	createNurses();
 	createServer();
 	pthread_mutex_init(&connectionMutex,NULL);
@@ -234,6 +236,13 @@ int processPacket( PACKET* p )
 			//error;
 		}
 	}
+}
+
+void endServer(int sig)
+{
+	remove(nurseS);	
+	remove(nurseR);
+	killServer(sig);
 }
 
 void

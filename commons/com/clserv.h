@@ -55,7 +55,8 @@ connect_to_server(void);
 int
 creatServ(void);
 
-int killServer();
+void killServer();
+void killClient();
 
 void close_server();
 
