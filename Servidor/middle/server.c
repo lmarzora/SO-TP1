@@ -230,7 +230,8 @@ int processPacket( PACKET* p )
 		}
 		case REGALAR:
 		{
-			//call regalar;
+			
+			printf("recibi el pokemon %s para dar en adopcion\n", pr->pokemons[0].name);
 			break;
 		}
 		default:

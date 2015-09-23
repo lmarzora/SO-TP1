@@ -49,7 +49,7 @@ int curar_pokemones(POKEMON* pokemones,int cant) {
 	ps->cant=cant;
 	ps->id=1;
 
-		
+	
 	send_rcv(CURAR,sizeof(CLSV_POKEMON_TRANSFER));
 
   	memcpy(pokemones,ps->pokemons, cant*sizeof(POKEMON));
@@ -59,7 +59,26 @@ int curar_pokemones(POKEMON* pokemones,int cant) {
 
 }
 
+int regalar_pokemon(POKEMON *pokemones, int index){
 
+	CLSV_POKEMON_TRANSFER * ps;
+	SVCL_POKEMON_TRANSFER * pr;
+	
+	ps = &p.data.clsv_pokemon_transfer;
+	pr = &p.data.svcl_pokemon_transfer;
+
+	memcpy(&(ps->pokemons[0]),&(pokemones[index]),sizeof(POKEMON));
+
+	ps->cant = 1;
+	ps->id = 1;
+
+	send_rcv(REGALAR,sizeof(CLSV_POKEMON_TRANSFER));
+
+
+	pokemones[index].life = -1;
+
+	return 1;
+}
 
 /* regalar , adoptar */
 

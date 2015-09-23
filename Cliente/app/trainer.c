@@ -14,7 +14,12 @@ void printLogo();
 void printHelp();
 void killClient(int);
 
+int cant_pokemones;
+
 int main(){
+
+
+	srand(time(NULL));
 
 	signal(SIGINT,killClient);
 	POKEMON pokemones[6];
@@ -45,6 +50,34 @@ int main(){
 			printPokemons(pokemones);
 		}else if((strcmp(buffer, "help\n")) == 0 || (strcmp(buffer, "man\n")) == 0){
 			printHelp();
+		}else if(strcmp(buffer, "abandon\n") == 0){
+			if(cant_pokemones != 1){
+				printf("Which one is the poor bastard?\n\n");
+				printPokemons(pokemones);
+				fgets(buffer, 255, stdin);
+				int n;
+				if((n = buffer[0] - '0') < 1 && (buffer[0] - '0') > cant_pokemones){
+					printf("Invalid command\n");
+				}
+				n--;
+				printf("n = %d\n", n);
+				int i;
+				int j = 0;
+				for(i = 0; i < 6; i++){
+					if(pokemones[i].life != -1){
+						if(j == n){
+							printf("i found the poor bastard\n");
+							regalar_pokemon(pokemones, i);
+							cant_pokemones--;
+						}
+						j++;
+					}
+				}	
+
+
+			}
+			else
+				printf("You only have one pokemon left :\\\n");
 		}else{
 			printf("Invalid command\n");
 		}
@@ -56,7 +89,6 @@ int main(){
 }
 
 void generatePokemons(POKEMON pokemones[6]){
-	srand(time(NULL));
 	int i;
 	int cant = rand()%3 + 4;
 	for(i = 0; i < cant; i++){
@@ -66,15 +98,17 @@ void generatePokemons(POKEMON pokemones[6]){
 	for(i = cant; i < 6; i++){
 		pokemones[i].life = -1;
 	}
-
+	cant_pokemones = cant;
 }
 
 void printPokemons(POKEMON pokemones[6]){
 	int i;
 	int j = 1;
-	for (i= 0; i<6 && pokemones[i].life != -1; i++){
-		printf("   %d) %-15s---   Life: %d%% \n", j, pokemones[i].name, pokemones[i].life);
-		j++;
+	for (i= 0; i<6; i++){
+		if(pokemones[i].life != -1){
+			printf("   %d) %-15s---   Life: %d%% \n", j, pokemones[i].name, pokemones[i].life);
+			j++;
+		}
 	}
 
 }
