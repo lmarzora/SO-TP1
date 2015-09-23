@@ -67,7 +67,6 @@ int main(){
 				for(i = 0; i < 6; i++){
 					if(pokemones[i].life != -1){
 						if(j == n){
-							printf("i found the poor bastard\n");
 							regalar_pokemon(pokemones, i);
 							cant_pokemones--;
 							saldo++;
@@ -151,5 +150,8 @@ void printHelp(){
 	printf("Available commands:\n");
 	printf("--> heal: Heal all your pokemons to full health\n");
 	printf("--> my pokemons: Check your pokemon's health\n");
+	printf("--> abandon: Allows you to put a pokemon up for adoption\n");
+	printf("\t\t Asks for a number of the one you choose to give\n");
+	printf("--> adopt: Adopt a pokemon from the PokemonCenter\n");
 	printf("--> new pokemons: Receive new pokemons\n");
 }
