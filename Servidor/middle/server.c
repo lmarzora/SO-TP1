@@ -18,11 +18,9 @@ static char* nurseR;
 static pthread_t ntid[3];
 static sem_t nursePillow, healingMachine, pipeS , pipeR;
 static pthread_mutex_t connectionMutex;
+static sem_t * sem_guarderia;
 
 #define DONE 1
-
-
-
 
 int processPacket(PACKET*);
 void createNurses();
@@ -34,6 +32,10 @@ void fatal(char*);
 void done(int);
 void endServer(int);
 
+void initsemaforo(){
+	
+}
+
 int main (void )
 {
 	srand(time(NULL));
@@ -41,6 +43,9 @@ int main (void )
 	createNurses();
 	createServer();
 	pthread_mutex_init(&connectionMutex,NULL);
+	if( !(sem_guarderia = sem_open("/mutexcenter", O_RDWR | O_CREAT, 0666, 1)))
+		fatal("Error creando semaforo guarderia\n");
+
 	while(1)
 	{
 		doServer();
@@ -229,7 +234,9 @@ int processPacket( PACKET* p )
 		{
 			printf("recibi pedido de adopción\n");
 			POKEMON aux;
+			sem_wait(sem_guarderia);
 			pokemon_adopt(&aux);
+			sem_post(sem_guarderia);
 			memcpy(&(ps->pokemons[0]), &aux, sizeof(POKEMON));
 			printList();
 			break;			
@@ -238,7 +245,9 @@ int processPacket( PACKET* p )
 		{
 			
 			printf("recibi el pokemon %s para dar en adopcion\n", pr->pokemons[0].name);
+			sem_wait(sem_guarderia);
 			add(pr->pokemons[0]);
+			sem_post(sem_guarderia);
 			printList();
 			break;
 		}

@@ -91,6 +91,7 @@ int main(){
 				pokemon_adopt(&pokemones[i]);
 				printf("Congratulations! You just adopted: %s\n", pokemones[i].name);
 				saldo--;
+				cant_pokemones++;
 			}
 		}else{
 			printf("Invalid command\n");

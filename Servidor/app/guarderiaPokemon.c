@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <semaphore.h>
 
 typedef struct node
 {
@@ -12,6 +13,7 @@ typedef struct node
 node_t * head;
 
 int cant;
+
 
 int add(POKEMON pokemon){
 
@@ -42,6 +44,8 @@ void printList(){
 
 
 int pokemon_adopt(POKEMON * pokemon){
+	
+
 	if(cant == 0){
 		return 0;
 	}
@@ -71,3 +75,4 @@ int pokemon_adopt(POKEMON * pokemon){
 
 	return 1;
 }
+
