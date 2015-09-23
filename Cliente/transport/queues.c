@@ -1,0 +1,108 @@
+#include "../../commons/com.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <sys/stat.h>
+#include <mqueue.h>
+#include <semaphore.h>
+#include<unistd.h>
+
+const static char* serverl = "/my_server";
+static int n, pid;
+static mqd_t serv;
+static char clsv[35];
+static char svcl[35];
+char semName[35];
+
+
+int requestConnection(CONNECTION* c) {
+
+
+
+	if((serv = mq_open(serverl, O_WRONLY, NULL)) == -1)
+		perror("ERROR connecting");
+
+	pid = getpid();
+	printf("connecting\n");
+	int n = mq_send(serv, (const char *)&pid,sizeof(int), 0);
+	mq_close(serv);
+/*	if(n<=0){
+		perror("error");
+		exit(1);	
+	}*/
+	sprintf(clsv,"/queue_clsv-%d",pid);
+	sprintf(svcl,"/queue_svcl-%d",pid);
+
+	sprintf(semName,"/sem-%d",pid);
+
+	sem_t* sem = sem_open(semName,O_CREAT,0777, 0);
+	if(sem == SEM_FAILED)
+	{
+		perror("fail");
+		exit(1);
+	}
+	sem_wait(sem);
+	sem_close(sem);
+	sem_unlink(semName);
+	
+	c->pid = pid;
+
+	printf("me conecte\n");
+
+	return 1;
+}
+
+
+int sendPacket(CONNECTION* c, PACKET* p,int size){
+	printf("sending packet\n");
+
+	int q_S = mq_open(clsv, O_WRONLY, 0666, NULL);
+	if(q_S < 0 )
+	{
+		perror("error");
+		exit(1);	
+	}
+	n = mq_send(q_S, (const char *)p, size, 0);
+	if(n < 0){
+		perror("ERROR writing to queue");
+		exit(1);
+	}
+	mq_close(q_S);
+	return n;
+}
+
+
+
+int receivePacket(CONNECTION* c, PACKET* p,int size){
+	printf("receiving packet\n");
+	int q_R = mq_open(svcl, O_RDONLY, 0666, NULL);
+	if(q_R < 0 )
+	{
+		perror("error");
+		exit(1);	
+	}
+	n = mq_receive(q_R, (char *)p, size, 0);
+	if (n < 0)
+  	{
+     		perror("ERROR reading from fifo");
+ 		exit(1);
+ 	}
+	mq_close(q_R);
+	return n;
+}
+
+
+int endConnection(CONNECTION* c){
+	remove(semName);
+	mq_unlink(clsv);
+	mq_unlink(svcl);
+	return 1;
+}
+
+
+
+
+
+

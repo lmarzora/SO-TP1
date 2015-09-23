@@ -6,10 +6,11 @@ TARGET = server
 OBJS = ./app/pokemonCenter.o ./middle/server.o ./app/guarderiaPokemon.o
 SOCKETS = ./transport/sockets.o
 PIPES = ./transport/fifos.o
+QUEUES = ./transport/queues.o
 CC = gcc
 LD = $(CC)
 LDOPTS = -o
-LIBS = -lpthread
+LIBS = -lpthread -lrt
 
 
 $(TARGET):
@@ -17,6 +18,8 @@ sockets: $(OBJS) $(SOCKETS)
 	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SOCKETS) $(LIBS)
 pipes: $(OBJS) $(PIPES)
 	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(PIPES) $(LIBS)
+queues: $(OBJS) $(QUEUES)
+	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(QUEUES) $(LIBS)
 
 clean:
 	rm -rf *.o $(TARGET)

@@ -266,10 +266,10 @@ void endServer(int sig)
 	killServer(sig);
 	exit(1);
 }
-
+/*
 void
 fatal(char *s)
 {
 	perror(s);
 	exit(1);
-}
+}*/
