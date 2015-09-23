@@ -15,6 +15,7 @@ void printHelp();
 void killClient(int);
 
 int cant_pokemones;
+int saldo;
 
 int main(){
 
@@ -69,6 +70,7 @@ int main(){
 							printf("i found the poor bastard\n");
 							regalar_pokemon(pokemones, i);
 							cant_pokemones--;
+							saldo++;
 						}
 						j++;
 					}
@@ -78,6 +80,18 @@ int main(){
 			}
 			else
 				printf("You only have one pokemon left :\\\n");
+		}else if(strcmp(buffer, "adopt\n")== 0){
+			if(cant_pokemones == 6){
+				printf("You don't have room for any more Pokemons\n");
+			}else if(saldo <=0){
+				printf("You need to abandon before adopting\n");
+			}else{
+				int i;
+				for(i=0; i<6 && pokemones[i].life != -1; i++);
+				pokemon_adopt(&pokemones[i]);
+				printf("Congratulations! You just adopted: %s\n", pokemones[i].name);
+				saldo--;
+			}
 		}else{
 			printf("Invalid command\n");
 		}
@@ -99,6 +113,7 @@ void generatePokemons(POKEMON pokemones[6]){
 		pokemones[i].life = -1;
 	}
 	cant_pokemones = cant;
+	saldo = 0;
 }
 
 void printPokemons(POKEMON pokemones[6]){

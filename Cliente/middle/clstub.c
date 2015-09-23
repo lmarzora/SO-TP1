@@ -74,8 +74,24 @@ int regalar_pokemon(POKEMON *pokemones, int index){
 
 	send_rcv(REGALAR,sizeof(CLSV_POKEMON_TRANSFER));
 
-
 	pokemones[index].life = -1;
+
+	return 1;
+}
+
+int pokemon_adopt(POKEMON * pokemon){
+	CLSV_POKEMON_TRANSFER * ps;
+	SVCL_POKEMON_TRANSFER * pr;
+	
+	ps = &p.data.clsv_pokemon_transfer;
+	pr = &p.data.svcl_pokemon_transfer;
+
+	ps->cant = 0;
+	ps->id = 1;
+
+	send_rcv(ADOPTAR,sizeof(CLSV_POKEMON_TRANSFER));
+
+	memcpy(pokemon, &(ps->pokemons[0]),sizeof(POKEMON));
 
 	return 1;
 }

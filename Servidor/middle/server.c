@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include<string.h>
 #include<signal.h>
+#include <time.h>
 
 static char* nurseS;
 static char* nurseR;
@@ -35,6 +36,7 @@ void endServer(int);
 
 int main (void )
 {
+	srand(time(NULL));
 	signal(SIGINT,endServer);
 	createNurses();
 	createServer();
@@ -225,13 +227,19 @@ int processPacket( PACKET* p )
 		}
 		case ADOPTAR:
 		{
-			//call adoptar;
+			printf("recibi pedido de adopción\n");
+			POKEMON aux;
+			pokemon_adopt(&aux);
+			memcpy(&(ps->pokemons[0]), &aux, sizeof(POKEMON));
+			printList();
 			break;			
 		}
 		case REGALAR:
 		{
 			
 			printf("recibi el pokemon %s para dar en adopcion\n", pr->pokemons[0].name);
+			add(pr->pokemons[0]);
+			printList();
 			break;
 		}
 		default:

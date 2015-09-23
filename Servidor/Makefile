@@ -3,7 +3,7 @@
 .SILENT:
 
 TARGET = server
-OBJS = ./app/pokemonCenter.o ./middle/server.o
+OBJS = ./app/pokemonCenter.o ./middle/server.o ./app/guarderiaPokemon.o
 SOCKETS = ./transport/sockets.o
 PIPES = ./transport/fifos.o
 CC = gcc
