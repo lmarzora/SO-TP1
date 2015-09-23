@@ -98,13 +98,16 @@ void acceptConnection(CONNECTION *c){
 		perror("fail");
 		exit(1);
 	}
-	sem_post(sem);
-	sem_close(sem);
 
 	if ( access(fifoS, 0) == -1 && mknod(fifoS, S_IFIFO|0666, 0) == -1 )
 		fatal("Error mknod fifoS");
 	if ( access(fifoR, 0) == -1 && mknod(fifoR, S_IFIFO|0666, 0) == -1 )
 		fatal("Error mknod fifoR");
+
+
+	sem_post(sem);
+	sem_close(sem);
+
 
 	close(lisfd);
 
