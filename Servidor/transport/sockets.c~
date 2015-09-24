@@ -99,10 +99,8 @@ void killServer(int signo)
 
 
 
-void fatal(char *s){
-	perror(s);
-	exit(1);
-}
+
+
 
 
 

@@ -144,14 +144,23 @@ void acceptConnection(CONNECTION *c){
 
 	mqd_t q_clsv;
 
+	printf("aaaaaaaaaaaaa %s\n", q_R);
+
 	if ( (q_clsv = mq_open(q_R, O_RDONLY|O_CREAT, 0666, &q_clsv_attr)) == -1 )
 		fatal("Error mq_open q_R");
+
+
+	printf("JJJJJJJ  q_clsv : %d\n", q_clsv);
+
 
 	mq_close(q_clsv);
 
 	sem_post(sem);
 	sem_close(sem);
 	mq_close(q_listener);
+
+
+	printf("termino acceptConnection\n");
 
 }
 

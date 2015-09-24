@@ -88,6 +88,11 @@ int receivePacket(CONNECTION* c, PACKET* p,int size){
 		exit(1);	
 	}
 
+
+
+	printf("q_R : %d\n", q_R);
+
+
 	n = mq_receive(q_R, (char *)p, size, 0);
 	if (n < 0)
   	{
