@@ -7,6 +7,7 @@ OBJS = ./app/trainer.o ./middle/clstub.o
 SOCKETS = ./transport/sockets.o
 PIPES = ./transport/fifos.o
 QUEUES = ./transport/queues.o
+SHMEM = ./transport/shmem.o
 CC = gcc
 LD = $(CC)
 LDOPTS = -o
@@ -20,6 +21,8 @@ pipes: $(OBJS) $(PIPES)
 	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(PIPES) $(LIBS)
 queues: $(OBJS) $(QUEUES)
 	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(QUEUES) $(LIBS)
+shmem: $(OBJS) $(SHMEM)
+	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SHMEM) $(LIBS)
 
 clean:
 	rm -rf *.o $(TARGET)

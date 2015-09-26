@@ -14,6 +14,10 @@ queues:
 	cd Cliente; make queues
 	cd Servidor; make queues
 
+shmem:
+	cd Cliente; make shmem
+	cd Servidor; make shmem
+
 clean:
 	cd Cliente; make clean
 	cd Servidor; make clean
