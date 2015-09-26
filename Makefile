@@ -21,3 +21,7 @@ shmem:
 clean:
 	cd Cliente; make clean
 	cd Servidor; make clean
+
+signals:
+	cd Cliente; make signals
+	cd Servidor; make signals

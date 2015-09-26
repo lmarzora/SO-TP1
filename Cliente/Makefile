@@ -8,6 +8,7 @@ SOCKETS = ./transport/sockets.o
 PIPES = ./transport/fifos.o
 QUEUES = ./transport/queues.o
 SHMEM = ./transport/shmem.o
+SIGNALS = ./transport/signals.o
 CC = gcc
 LD = $(CC)
 LDOPTS = -o
@@ -23,6 +24,8 @@ queues: $(OBJS) $(QUEUES)
 	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(QUEUES) $(LIBS)
 shmem: $(OBJS) $(SHMEM)
 	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SHMEM) $(LIBS)
+signals: $(OBJS) $(SIGNALS)
+	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SIGNALS) $(LIBS)
 
 clean:
 	rm -rf *.o $(TARGET)
