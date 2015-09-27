@@ -5,7 +5,7 @@
 TARGET = trainer
 OBJS = ./app/trainer.o ./middle/clstub.o
 SOCKETS = ./transport/sockets.o
-PIPES = ./transport/fifos.o
+FIFOS = ./transport/fifos.o
 QUEUES = ./transport/queues.o
 SHMEM = ./transport/shmem.o
 SIGNALS = ./transport/signals.o
@@ -18,8 +18,8 @@ LIBS = -lpthread -lrt
 $(TARGET):
 sockets: $(OBJS) $(SOCKETS)
 	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SOCKETS) $(LIBS)
-pipes: $(OBJS) $(PIPES)
-	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(PIPES) $(LIBS)
+fifos: $(OBJS) $(FIFOS)
+	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(FIFOS) $(LIBS)
 queues: $(OBJS) $(QUEUES)
 	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(QUEUES) $(LIBS)
 shmem: $(OBJS) $(SHMEM)

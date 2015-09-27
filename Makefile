@@ -6,9 +6,9 @@ sockets:
 	cd Cliente; make sockets
 	cd Servidor; make sockets
 
-pipes:
-	cd Cliente; make pipes
-	cd Servidor; make pipes
+fifos:
+	cd Cliente; make fifos
+	cd Servidor; make fifos
 
 queues:
 	cd Cliente; make queues
