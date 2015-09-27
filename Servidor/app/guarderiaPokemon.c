@@ -15,14 +15,14 @@ node_t * head;
 int cant;
 
 
-int add(POKEMON pokemon){
+int regalar_pokemon(POKEMON * pokemon, int index){
 
 	if(head == NULL){
 		head = malloc(sizeof(node_t));
-		memcpy(&(head->pokemon), &pokemon, sizeof(POKEMON));
+		memcpy(&(head->pokemon), &(pokemon[index]), sizeof(POKEMON));
 	}else{
 		node_t * aux = malloc(sizeof(node_t));
-		memcpy(&(aux->pokemon), &pokemon, sizeof(POKEMON));
+		memcpy(&(aux->pokemon), &(pokemon[index]), sizeof(POKEMON));
 		aux->next = head;
 		head = aux;
 	}
@@ -43,7 +43,7 @@ void printList(){
 }
 
 
-int pokemon_adopt(POKEMON * pokemon){
+int adoptar_pokemon(POKEMON * pokemon){
 	
 
 	if(cant == 0){

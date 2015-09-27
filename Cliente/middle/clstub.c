@@ -80,7 +80,7 @@ int regalar_pokemon(POKEMON *pokemones, int index){
 	return 1;
 }
 
-int pokemon_adopt(POKEMON * pokemon){
+int adoptar_pokemon(POKEMON * pokemon){
 	CLSV_POKEMON_TRANSFER * ps;
 	SVCL_POKEMON_TRANSFER * pr;
 	

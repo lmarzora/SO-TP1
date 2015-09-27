@@ -7,6 +7,8 @@
 #define MAX_LENGTH 256
 #endif
 
+#define MAX_NUM_POKEMONS 6
+
 static const char* POKEMON_NAMES[] = {"Bulbasaur", "Ivysaur", "Venusaur", "Charmander", 
 "Charmeleon", "Charizard", "Squirtle", "Wartortle", "Blastoise", "Caterpie", "Metapod", 
 "Butterfree", "Weedle", "Kakuna", "Beedrill", "Pidgey", "Pidgeotto", "Pidgeot", "Rattata", 

@@ -31,10 +31,7 @@ void* nurse();
 void fatal(char*);
 void done(int);
 void endServer(int);
-
-void initsemaforo(){
-	
-}
+void printList();
 
 int main (void )
 {
@@ -232,10 +229,10 @@ int processPacket( PACKET* p )
 		}
 		case ADOPTAR:
 		{
-			printf("recibi pedido de adopción\n");
+			//printf("recibi pedido de adopción\n");
 			POKEMON aux;
 			sem_wait(sem_guarderia);
-			pokemon_adopt(&aux);
+			adoptar_pokemon(&aux);
 			sem_post(sem_guarderia);
 			memcpy(&(ps->pokemons[0]), &aux, sizeof(POKEMON));
 			printList();
@@ -244,9 +241,9 @@ int processPacket( PACKET* p )
 		case REGALAR:
 		{
 			
-			printf("recibi el pokemon %s para dar en adopcion\n", pr->pokemons[0].name);
+			//printf("recibi el pokemon %s para dar en adopcion\n", pr->pokemons[0].name);
 			sem_wait(sem_guarderia);
-			add(pr->pokemons[0]);
+			regalar_pokemon(pr->pokemons, 0);
 			sem_post(sem_guarderia);
 			printList();
 			break;

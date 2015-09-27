@@ -4,7 +4,7 @@
 #include <string.h>
 #include "../../commons/myTypes.h"
 #include "../../commons/API.h"
-#include<signal.h>
+#include <signal.h>
 
 #define forever while(1)
 
@@ -27,7 +27,7 @@ int main(){
 	srand(time(NULL));
 
 	signal(SIGINT,killClient);
-	POKEMON pokemones[6];
+	POKEMON pokemones[MAX_NUM_POKEMONS];
 	generatePokemons(pokemones);
 
 	printf("\033[2J\033[1;1H");
@@ -70,7 +70,7 @@ int main(){
 
 void cmd_curar_pokemones(POKEMON pokemones[6]){
 	int i, cant = 0;
-	for(i=0; i< 6; i++){
+	for(i=0; i< MAX_NUM_POKEMONS; i++){
 		int life = pokemones[i].life;
 		if(life == 100){
 			cant++;
@@ -80,7 +80,7 @@ void cmd_curar_pokemones(POKEMON pokemones[6]){
 		printf("Your Pokemons are already fully healed!\n");
 		return;
 	}
-	curar_pokemones(pokemones, 6);
+	curar_pokemones(pokemones, MAX_NUM_POKEMONS);
 	printf("Thank you for waiting\n");
 	printf("We've restored your Pokemons to full health\n");
 }
@@ -106,7 +106,7 @@ void cmd_abandon(POKEMON pokemones[6], char * buffer){
 		//printf("n = %d\n", n);
 		int i;
 		int j = 0;
-		for(i = 0; i < 6; i++){
+		for(i = 0; i < MAX_NUM_POKEMONS; i++){
 			if(pokemones[i].life != -1){
 				if(j == n){
 					printf("Goodbye %s!\n", pokemones[i].name);
@@ -122,14 +122,14 @@ void cmd_abandon(POKEMON pokemones[6], char * buffer){
 }
 
 void cmd_adopt(POKEMON pokemones[6]){
-	if(cant_pokemones == 6){
+	if(cant_pokemones == MAX_NUM_POKEMONS){
 		printf("You don't have room for any more Pokemons\n");
 	}else if(saldo <=0){
 		printf("You need to abandon before adopting\n");
 	}else{
 		int i;
-		for(i=0; i<6 && pokemones[i].life != -1; i++);
-		pokemon_adopt(&pokemones[i]);
+		for(i=0; i<MAX_NUM_POKEMONS && pokemones[i].life != -1; i++);
+		adoptar_pokemon(&pokemones[i]);
 		printf("Congratulations! You just adopted: %s\n", pokemones[i].name);
 		saldo--;
 		cant_pokemones++;
@@ -153,7 +153,7 @@ void generatePokemons(POKEMON pokemones[6]){
 void printPokemons(POKEMON pokemones[6]){
 	int i;
 	int j = 1;
-	for (i= 0; i<6; i++){
+	for (i= 0; i<MAX_NUM_POKEMONS; i++){
 		if(pokemones[i].life != -1){
 			printf("   %d) %-15s---   Life: %d%% \n", j, pokemones[i].name, pokemones[i].life);
 			j++;
