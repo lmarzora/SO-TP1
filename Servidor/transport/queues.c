@@ -37,13 +37,13 @@ if ( (q_listener = mq_open(server_name, O_RDONLY|O_CREAT, 0666, &listener_attr))
 	fatal("Error mq_open q_listener");
 
 	mq_close(q_listener);
-	printf("server born\n");
+	//printf("server born\n");
 
 	return;
 }
 
 int sendPacket(CONNECTION *c, PACKET *p,int size){
-	printf("sending packet\n");
+	//printf("sending packet\n");
 	int n;
 
 	char q_S[35];
@@ -81,7 +81,7 @@ int receivePacket(CONNECTION* c, PACKET *p, int size){
 	qty = mq_receive(q_clsv, (char *)p,sizeof(PACKET), NULL);
 	mq_close(q_clsv);
 
-	printf("packet received\n");
+	//printf("packet received\n");
 	return qty;
 }
 
@@ -99,19 +99,19 @@ void acceptConnection(CONNECTION *c){
 		perror("error");
 	}
 
-	printf("pid = %d\n", c->pid);
+	//printf("pid = %d\n", c->pid);
 
 	char q_S[35], q_R[35];
 
-	printf("connecting to %d\n",c->pid);
+	//printf("connecting to %d\n",c->pid);
 
 	sprintf(q_R,"/queue_clsv-%d",c->pid);
-	printf("%s\n",q_R);
+	//printf("%s\n",q_R);
 	sprintf(q_S,"/queue_svcl-%d",c->pid);
-	printf("%s\n",q_S);
+	//printf("%s\n",q_S);
 
 	sprintf(semName,"/sem-%d",c->pid);
-	printf("%s\n",semName);
+	//printf("%s\n",semName);
 	sem_t* sem = sem_open(semName,O_CREAT,0777,0);
 	if(sem == SEM_FAILED)
 	{
@@ -131,7 +131,7 @@ void acceptConnection(CONNECTION *c){
 		fatal("Error mq_open q_S");
 
 
-	printf("q_svcl : %d\n", q_svcl);
+	//printf("q_svcl : %d\n", q_svcl);
 
 	mq_close(q_svcl);
 
@@ -157,7 +157,7 @@ void acceptConnection(CONNECTION *c){
 
 
 void killServer(int signo){
-	printf("killing server\n");
+	printf("\nKilling server -- GoodBye!\n");
 	remove(semName);
 	mq_unlink(server_name);
 	exit(1);

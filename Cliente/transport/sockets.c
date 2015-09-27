@@ -18,7 +18,7 @@ int requestConnection(CONNECTION*c) {
 
 int sendPacket(CONNECTION* c, PACKET* p, int size)
 {	
-	printf("sending packet\n");
+	//printf("sending packet\n");
 	int sockfd = c->sockfd;
 	int n = write(sockfd,p,size);
 	if (n < 0)
@@ -31,7 +31,7 @@ int sendPacket(CONNECTION* c, PACKET* p, int size)
 
 int receivePacket(CONNECTION* c, PACKET* p,int size)
 {
-	printf("receiving packet\n");
+	//printf("receiving packet\n");
 	int sockfd = c->sockfd;
 	int n = read(sockfd,p,size);
 	if (n < 0)

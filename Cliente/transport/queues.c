@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <mqueue.h>
 #include <semaphore.h>
-#include<unistd.h>
+#include <unistd.h>
 
 const static char* serverl = "/my_server";
 static int n, pid;
@@ -25,7 +25,7 @@ int requestConnection(CONNECTION* c) {
 		perror("ERROR connecting");
 
 	pid = getpid();
-	printf("connecting\n");
+	//printf("connecting\n");
 	int n = mq_send(serv, (const char *)&pid,sizeof(int), 0);
 	mq_close(serv);
 /*	if(n<=0){
@@ -49,14 +49,14 @@ int requestConnection(CONNECTION* c) {
 	
 	c->pid = pid;
 
-	printf("me conecte\n");
+	//printf("me conecte\n");
 
 	return 1;
 }
 
 
 int sendPacket(CONNECTION* c, PACKET* p,int size){
-	printf("sending packet\n");
+	//printf("sending packet\n");
 
 	int q_S = mq_open(clsv, O_WRONLY);
 	if(q_S < 0 )
@@ -76,7 +76,7 @@ int sendPacket(CONNECTION* c, PACKET* p,int size){
 
 
 int receivePacket(CONNECTION* c, PACKET* p,int size){
-	printf("receiving packet\n");
+	//printf("receiving packet\n");
 	int q_R;
 
 	if((q_R = mq_open(svcl, O_RDONLY)) == -1){

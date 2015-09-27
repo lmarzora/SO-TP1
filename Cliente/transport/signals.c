@@ -6,7 +6,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <semaphore.h>
-#include<unistd.h>
+#include <unistd.h>
 
 
 const char *server_name = "/tmp/server_id";

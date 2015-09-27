@@ -6,8 +6,8 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include<semaphore.h>
-#include<unistd.h>
+#include <semaphore.h>
+#include <unistd.h>
 
 static int pid, n;
 
@@ -25,7 +25,7 @@ int requestConnection(CONNECTION* c) {
 		perror("ERROR connecting");
 	
 	pid = getpid();
-	printf("connecting\n");
+	//printf("connecting\n");
 	int n = write(serv,&pid,sizeof(int));
 	close(serv);
 	if(n<=0){
@@ -37,7 +37,7 @@ int requestConnection(CONNECTION* c) {
 	
 
 	sprintf(semName,"/sem-%d",pid);
-	printf("%s\n",semName);
+	//printf("%s\n",semName);
 	//sem_unlink(semName);
 	sem_t* sem = sem_open(semName,O_CREAT,0777, 0);
 	if(sem == SEM_FAILED)
@@ -55,7 +55,7 @@ int requestConnection(CONNECTION* c) {
 
 
 int sendPacket(CONNECTION* c, PACKET* p,int size){
-	printf("sending packet\n");
+	//printf("sending packet\n");
 	int fdS = open(clsv,O_WRONLY);
 	if(fdS < 0 )
 	{
@@ -72,7 +72,7 @@ int sendPacket(CONNECTION* c, PACKET* p,int size){
 }
 
 int receivePacket(CONNECTION* c, PACKET* p,int size){
-	printf("receiving packet\n");
+	//printf("receiving packet\n");
 	int fdR = open(svcl,O_RDONLY);
 	n = read(fdR, p,size);
 	if (n < 0)

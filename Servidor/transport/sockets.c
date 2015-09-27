@@ -3,16 +3,16 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <string.h>
-#include<unistd.h>
+#include <unistd.h>
 #include "../../commons/com.h"
-#include<signal.h>
+#include <signal.h>
 
 static int serv;
 
 void createServer()
 {
 
-	printf("creating serv\n");
+	//printf("creating serv\n");
 	int sockfd, portno;
 	char buffer[256];
 	struct sockaddr_in serv_addr;
@@ -41,7 +41,7 @@ void createServer()
 		exit(1);
 	}
 	listen(sockfd,5);
-	printf("server born\n");
+	//printf("server born\n");
 	serv = sockfd;
 	
 
@@ -53,7 +53,7 @@ void createServer()
 
 void acceptConnection(CONNECTION* c)
 {
-	printf("listening\n");
+	//printf("listening\n");
 	int sockfd = serv;
 	int clilen;
 	struct sockaddr_in cli_addr;
@@ -71,12 +71,12 @@ void acceptConnection(CONNECTION* c)
 
 int receivePacket(CONNECTION* c, PACKET *p, int size) {
 	int qty = read(c->sockfd,p,size);
-	printf("packet received\n");
+	//printf("packet received\n");
 	return qty;
 }
 
 int sendPacket(CONNECTION* c, PACKET *p, int size) {
-	printf("sending packet\n");
+	//printf("sending packet\n");
 	int n = write(c->sockfd,p,size);
 	return n;
 }
@@ -84,13 +84,13 @@ int sendPacket(CONNECTION* c, PACKET *p, int size) {
 int endConnection(CONNECTION* c)
 {
 	close(c->sockfd);
-	printf("socket closed\n");
+	//printf("socket closed\n");
 	return 1;
 }
 
 void killServer(int signo)
 {
-	printf("killing server\n");
+	printf("\nKilling server -- GoodBye!\n");
 	shutdown(serv,2);
 }
 
