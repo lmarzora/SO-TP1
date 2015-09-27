@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <semaphore.h>
+#include <fcntl.h>
 
 typedef struct node
 {
@@ -11,6 +12,10 @@ typedef struct node
 } node_t;
 
 node_t * head;
+
+
+static int database_fd;
+static char *database_name = "/tmp/database";
 
 int cant;
 
@@ -21,6 +26,20 @@ int print_regalar_pokemon(POKEMON * pokemon, int index, int id){
 
 }
 int regalar_pokemon(POKEMON * pokemon, int index){
+
+	if((database_fd = open(database_name, O_WRONLY|O_APPEND, 0666)) == -1){
+		perror("fail opening database");
+	}
+
+	write(database_fd, pokemon[index].name, strlen(pokemon[index].name));
+	write(database_fd, ";", strlen("\n"));
+
+	char buff[30];
+	sprintf(buff,"%d",pokemon[index].life);
+
+	write(database_fd, buff, strlen(buff));
+	
+	write(database_fd, "\n", strlen("\n"));
 
 	if(head == NULL){
 		head = malloc(sizeof(node_t));

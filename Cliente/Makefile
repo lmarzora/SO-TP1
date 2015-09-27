@@ -9,6 +9,7 @@ FIFOS = ./transport/fifos.o
 QUEUES = ./transport/queues.o
 SHMEM = ./transport/shmem.o
 SIGNALS = ./transport/signals.o
+FCNTL = ./app/trainer_fcntl.o ../Servidor/app/pokemonCenter.o ../Servidor/app/guarderiaPokemon.o
 CC = gcc
 LD = $(CC)
 LDOPTS = -o
@@ -26,6 +27,8 @@ shmem: $(OBJS) $(SHMEM)
 	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SHMEM) $(LIBS)
 signals: $(OBJS) $(SIGNALS)
 	$(LD) $(LDOPTS) $(TARGET) $(OBJS) $(SIGNALS) $(LIBS)
+fcntl: $(OBJS) $(FCNTL)
+	$(LD) $(LDOPTS) $(TARGET) $(FCNTL) $(LIBS)
 
 clean:
 	rm -rf *.o $(TARGET)

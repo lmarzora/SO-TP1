@@ -25,3 +25,6 @@ clean:
 signals:
 	cd Cliente; make signals
 	cd Servidor; make signals
+
+fcntl:
+	cd Cliente; make fcntl
