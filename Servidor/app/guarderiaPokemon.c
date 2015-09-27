@@ -34,7 +34,7 @@ int add(POKEMON pokemon){
 void printList(){
 	node_t * current = head;
 
-	printf("\n----- EN ADOPCION  ------\n" );
+	printf("\n------ EN ADOPCION  -------\n" );
 	while(current!=NULL){
 		printf("%s\n", current->pokemon.name);
 		current = current->next;

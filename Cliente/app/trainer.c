@@ -13,6 +13,10 @@ void printPokemons(POKEMON pokemones[6]);
 void printLogo();
 void printHelp();
 void killClient(int);
+void cmd_curar_pokemones(POKEMON pokemones[6]);
+void cmd_new_pokemones(POKEMON pokemones[6]);
+void cmd_abandon(POKEMON pokemones[6], char * buffer);
+void cmd_adopt(POKEMON pokemones[6]);
 
 int cant_pokemones;
 int saldo;
@@ -28,85 +32,115 @@ int main(){
 
 	printf("\033[2J\033[1;1H");
 	printLogo();
-	printf("\t\t    ---- POKEMON CENTER ----\n\n");
+	printf("\t\t    ---- POKEMON CENTER ----\n");
+	printf("\t\t   Llorca, Marzoratti, Vitali\n");
 	printf("Your pokemons are: \n");
 	printPokemons(pokemones);
-
+	int continue_trainer = 1;
 
 	char buffer[256];
 
-	forever{
+	while(continue_trainer){
 		printf("\n--> What do you want to do?\n$ ");
 		bzero(buffer, 256);
 		fgets(buffer, 255, stdin);
 
-		if(strcmp(buffer,"heal\n") == 0){
-			curar_pokemones(pokemones, 6);
-		}else if (strcmp(buffer, "new pokemons\n") == 0)
+		if(strcmp(buffer,"heal\n") == 0)
 		{
-			generatePokemons(pokemones);
-			printf("Your new pokemons are\n");
-			printPokemons(pokemones);
+			cmd_curar_pokemones(pokemones);
+		}else if (strcmp(buffer, "new pokemons\n") == 0){
+			cmd_new_pokemones(pokemones);
 		}else if(strcmp(buffer, "my pokemons\n") == 0){
 			printPokemons(pokemones);
 		}else if((strcmp(buffer, "help\n")) == 0 || (strcmp(buffer, "man\n")) == 0){
 			printHelp();
 		}else if(strcmp(buffer, "abandon\n") == 0){
-			if(cant_pokemones != 1){
-				printf("Which one is the poor bastard?\n\n");
-				printPokemons(pokemones);
-				fgets(buffer, 255, stdin);
-				int n;
-				if((n = buffer[0] - '0') < 1 && (buffer[0] - '0') > cant_pokemones){
-					printf("Invalid command\n");
-				}
-				n--;
-				printf("n = %d\n", n);
-				int i;
-				int j = 0;
-				for(i = 0; i < 6; i++){
-					if(pokemones[i].life != -1){
-						if(j == n){
-							regalar_pokemon(pokemones, i);
-							cant_pokemones--;
-							saldo++;
-						}
-						j++;
-					}
-				}	
-
-
-			}
-			else
-				printf("You only have one pokemon left :\\\n");
+			cmd_abandon(pokemones, buffer);
 		}else if(strcmp(buffer, "adopt\n")== 0){
-			if(cant_pokemones == 6){
-				printf("You don't have room for any more Pokemons\n");
-			}else if(saldo <=0){
-				printf("You need to abandon before adopting\n");
-			}else{
-				int i;
-				for(i=0; i<6 && pokemones[i].life != -1; i++);
-				pokemon_adopt(&pokemones[i]);
-				printf("Congratulations! You just adopted: %s\n", pokemones[i].name);
-				saldo--;
-				cant_pokemones++;
-			}
+			cmd_adopt(pokemones);
+		}else if(strcmp(buffer, "exit\n")== 0){
+			continue_trainer = 0;
+			killClient(0);
 		}else{
 			printf("Invalid command\n");
-		}
-
-		
-	
+		}	
   }
 
+}
+
+void cmd_curar_pokemones(POKEMON pokemones[6]){
+	int i, cant = 0;
+	for(i=0; i< 6; i++){
+		int life = pokemones[i].life;
+		if(life == 100){
+			cant++;
+		}
+	}
+	if(cant == cant_pokemones){
+		printf("Your Pokemons are already fully healed!\n");
+		return;
+	}
+	curar_pokemones(pokemones, 6);
+	printf("Thank you for waiting\n");
+	printf("We've restored your Pokemons to full health\n");
+}
+
+void cmd_new_pokemones(POKEMON pokemones[6]){
+	generatePokemons(pokemones);
+	printf("Your new Pokemons are\n");
+	printPokemons(pokemones);
+}
+
+void cmd_abandon(POKEMON pokemones[6], char * buffer){
+	if(cant_pokemones != 1){
+		printf("Which one do you want to leave?\n\n");
+		printPokemons(pokemones);
+		fgets(buffer, 255, stdin);
+
+		int n = buffer[0] - '0';
+		if(buffer[1] != '\n' || n < 1 || n > cant_pokemones){
+			printf("Invalid number\n");
+			return;
+		}
+		n--;
+		//printf("n = %d\n", n);
+		int i;
+		int j = 0;
+		for(i = 0; i < 6; i++){
+			if(pokemones[i].life != -1){
+				if(j == n){
+					printf("Goodbye %s!\n", pokemones[i].name);
+					regalar_pokemon(pokemones, i);
+					cant_pokemones--;
+					saldo++;
+				}
+				j++;
+			}
+		}	
+	}else
+		printf("You only have one Pokemon left\n");
+}
+
+void cmd_adopt(POKEMON pokemones[6]){
+	if(cant_pokemones == 6){
+		printf("You don't have room for any more Pokemons\n");
+	}else if(saldo <=0){
+		printf("You need to abandon before adopting\n");
+	}else{
+		int i;
+		for(i=0; i<6 && pokemones[i].life != -1; i++);
+		pokemon_adopt(&pokemones[i]);
+		printf("Congratulations! You just adopted: %s\n", pokemones[i].name);
+		saldo--;
+		cant_pokemones++;
+	}
 }
 
 void generatePokemons(POKEMON pokemones[6]){
 	int i;
 	int cant = rand()%3 + 4;
 	for(i = 0; i < cant; i++){
-		strcpy(pokemones[i].name, POKEMON_NAMES[rand()%150]);
+		strcpy(pokemones[i].name, POKEMON_NAMES[rand()%151]);
 		pokemones[i].life = rand()%70 + 1;
 	}
 	for(i = cant; i < 6; i++){
@@ -142,16 +176,16 @@ void printLogo(){
 	printf("      MMMX   \"MMMM\"  MM       ~%%:           !Mh.\"\"\" dMI IMMP  \n");
 	printf("      'MMM.                                             IMX   \n");
 	printf("       ~M!M                                             IMP   \n");
-	//printf("aaaaaaaaaaaa\n");
 }
 
 void printHelp(){
-	printf("***\tHelp\t***\n");
+	printf("\n***\tHelp\t***\n");
 	printf("Available commands:\n");
 	printf("--> heal: Heal all your pokemons to full health\n");
 	printf("--> my pokemons: Check your pokemon's health\n");
 	printf("--> abandon: Allows you to put a pokemon up for adoption\n");
-	printf("\t\t Asks for a number of the one you choose to give\n");
+	printf("    Asks for a number of the one you choose to give\n");
 	printf("--> adopt: Adopt a pokemon from the PokemonCenter\n");
 	printf("--> new pokemons: Receive new pokemons\n");
+	printf("--> exit: Exit Pokemon Center\n");
 }

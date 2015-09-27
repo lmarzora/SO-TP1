@@ -32,7 +32,8 @@ send_rcv(int opcode, int size)
 }
 
 void killClient(int sig) {
-	endConnection(&c);	
+	endConnection(&c);
+	printf("\nWe hope to see you again!\n");	
 	exit(1);
 }
 
