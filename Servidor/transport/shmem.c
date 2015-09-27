@@ -27,14 +27,14 @@ void createServer(){
 
 	close(fd);
 
-	printf("server born\n");
+	printf("Server born\n");
 
 	return;
 }
 
 int sendPacket(CONNECTION *c, PACKET *p,int size){
 	
-	printf("sending packet from server to client\n");
+	//printf("sending packet from server to client\n");
 	int n;
 
 	char sharedmem[35];
@@ -79,7 +79,7 @@ int receivePacket(CONNECTION* c, PACKET *p, int size){
 	}
 	sem_wait(sem);
 
-	printf("receiving packet\n");
+	//printf("receiving packet\n");
 	int n;
 
 	char sharedmem[35];
@@ -97,7 +97,7 @@ int receivePacket(CONNECTION* c, PACKET *p, int size){
 	memcpy(p, paquete, size);
 
 	close(fd);
-	printf("packet received\n");
+	//printf("packet received\n");
 	return 1;
 	
 }
@@ -120,18 +120,18 @@ void acceptConnection(CONNECTION *c){
 
 	c->pid = *memid_listener;
 	
-	printf("pid = %d\n", c->pid);
+	//printf("pid = %d\n", c->pid);
 
 	char sharedmem[35];
 
-	printf("connecting to %d\n",c->pid);
+	//printf("connecting to %d\n",c->pid);
 
 	sprintf(sharedmem,"/shmem-%d",c->pid);
-	printf("%s\n",sharedmem);
+	//printf("%s\n",sharedmem);
 
 	char semName[35];
 	sprintf(semName,"/sem_svcl-%d",c->pid);
-	printf("%s\n",semName);
+	//printf("%s\n",semName);
 	sem_t* sem = sem_open(semName,O_CREAT,0777,0);
 	if(sem == SEM_FAILED)
 	{

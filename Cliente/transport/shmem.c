@@ -39,7 +39,7 @@ int requestConnection(CONNECTION* c) {
 		fatal("mmap");
 	close(fd);
 	int pid = getpid();
-	printf("connecting\n");
+	//printf("connecting\n");
 
 	*memid = pid;
 
@@ -71,14 +71,14 @@ int requestConnection(CONNECTION* c) {
 	
 	c->pid = pid;
 
-	printf("me conecte\n");
+	//printf("me conecte\n");
 
 	return 1;
 }
 
 
 int sendPacket(CONNECTION* c, PACKET* p,int size){
-	printf("sending packet from client to server\n");
+	//printf("sending packet from client to server\n");
 
 	int fd;
 	
@@ -102,11 +102,11 @@ int receivePacket(CONNECTION* c, PACKET* p,int size){
 	
 	sem_wait(semReceive);
 
-	printf("receiving packet\n");
+	//printf("receiving packet\n");
 
 	memcpy(p, paquete, size);
 
-	printf("packet received\n");
+	//printf("packet received\n");
 	return 1;
 	
 }

@@ -14,7 +14,12 @@ node_t * head;
 
 int cant;
 
+int print_regalar_pokemon(POKEMON * pokemon, int index, int id){
+	int aux = regalar_pokemon(pokemon, index);
+	stdprint(id, "abandon", cant, pokemon[index].name, pokemon[index].life);
+	return aux;
 
+}
 int regalar_pokemon(POKEMON * pokemon, int index){
 
 	if(head == NULL){
@@ -27,7 +32,6 @@ int regalar_pokemon(POKEMON * pokemon, int index){
 		head = aux;
 	}
 	cant++;
-
 	return 1;
 }
 
@@ -42,13 +46,16 @@ void printList(){
 	printf("---------------------------\n" );
 }
 
-
-int adoptar_pokemon(POKEMON * pokemon){
-	
-
+int print_adoptar_pokemon(POKEMON * pokemon, int id){
 	if(cant == 0){
 		return 0;
 	}
+	int aux = adoptar_pokemon(pokemon);
+	stdprint(id, "adopt", cant, (*pokemon).name, (*pokemon).life);
+	return aux;
+}
+
+int adoptar_pokemon(POKEMON * pokemon){
 
 	int ganador = rand()%cant;
 	

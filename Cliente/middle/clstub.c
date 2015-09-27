@@ -48,7 +48,7 @@ int curar_pokemones(POKEMON* pokemones,int cant) {
 
 	memcpy(ps->pokemons,pokemones,cant*sizeof(POKEMON));
 	ps->cant=cant;
-	ps->id=1;
+	ps->id=getpid();
 
 	
 	send_rcv(CURAR,sizeof(CLSV_POKEMON_TRANSFER));
@@ -71,7 +71,7 @@ int regalar_pokemon(POKEMON *pokemones, int index){
 	memcpy(&(ps->pokemons[0]),&(pokemones[index]),sizeof(POKEMON));
 
 	ps->cant = 1;
-	ps->id = 1;
+	ps->id = getpid();
 
 	send_rcv(REGALAR,sizeof(CLSV_POKEMON_TRANSFER));
 
@@ -88,7 +88,7 @@ int adoptar_pokemon(POKEMON * pokemon){
 	pr = &p.data.svcl_pokemon_transfer;
 
 	ps->cant = 0;
-	ps->id = 1;
+	ps->id = getpid();
 
 	send_rcv(ADOPTAR,sizeof(CLSV_POKEMON_TRANSFER));
 

@@ -1,20 +1,20 @@
 #include "../../commons/com.h"
 #include "../../commons/API.h"
 #include "server.h"
-#include<stdlib.h>
-#include<fcntl.h>
-#include<stdio.h>
-#include<unistd.h>
-#include<semaphore.h>
-#include<pthread.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <semaphore.h>
+#include <pthread.h>
 #include <sys/stat.h>
-#include<string.h>
-#include<signal.h>
+#include <string.h>
+#include <signal.h>
 #include <time.h>
 
 static char* nurseS;
 static char* nurseR;
-
+static int nurse_id = 1;
 static pthread_t ntid[3];
 static sem_t nursePillow, healingMachine, pipeS , pipeR;
 static pthread_mutex_t connectionMutex;
@@ -26,7 +26,7 @@ int processPacket(PACKET*);
 void createNurses();
 void doServer();
 void* handleConnection(void*);
-void doNurse();
+void doNurse(int);
 void* nurse();
 void fatal(char*);
 void done(int);
@@ -39,6 +39,12 @@ int main (void )
 	signal(SIGINT,endServer);
 	createNurses();
 	createServer();
+	printf("-----------------------------------------------------------\n");
+	printf("Num (heal) = Number of machine healing pokemon\n");
+	printf("Num (abandon/adopt) = Number of pokemon up for adoption\n");
+	printf("-----------------------------------------------------------\n");
+	printf("%-7s %-10s %-5s %-15s %s\n", "PID", "Command", "Num", " Name", "Life");
+	printf("-----------------------------------------------------------\n");
 	pthread_mutex_init(&connectionMutex,NULL);
 	if( !(sem_guarderia = sem_open("/mutexcenter", O_RDWR | O_CREAT, 0666, 1)))
 		fatal("Error creando semaforo guarderia\n");
@@ -52,7 +58,7 @@ int main (void )
 
 void createNurses() 
 {		
-	printf("creating nurses\n");
+	//printf("creating nurses\n");
 	nurseS = "/tmp/nurseS";
 	if ( access(nurseS, 0) == -1 && mknod(nurseS, S_IFIFO|0666, 0) == -1 )
 		fatal("Error mknod  nurseS");
@@ -68,7 +74,7 @@ void createNurses()
 			
 		for( i = 0 ; i < 3 ; i++ ){
 			pthread_create(	&(ntid[i]) , NULL , nurse , NULL );
-			printf("new nurse\n");
+			printf("Created Nurse #%d\n", i+1);
 		}
 		
 	return ;
@@ -76,23 +82,26 @@ void createNurses()
 
 void* nurse()
 {
+	pthread_mutex_lock(&connectionMutex);
+	int id = nurse_id++;
+	pthread_mutex_unlock(&connectionMutex);
 	while(1)
-		doNurse();
+		doNurse(id);
 }
 
 
-void doNurse()
+void doNurse(int id)
 {
 
 	TRAY tray;
 
-	printf("nurse sleeping\n");
+	//printf("nurse sleeping\n");
 	sem_wait(&nursePillow);
-	printf("wake up!\n");
+	//printf("wake up!\n");
 	int rfd, wfd;
 	
 	//read from nurseR
-	printf("reading from nurseR thread: %d\n",pthread_self());
+	//printf("reading from nurseR thread: %d\n",pthread_self());
 	rfd = open(nurseR,O_RDONLY);
 	int n;
 	n = read(rfd,&tray,sizeof(TRAY));
@@ -101,13 +110,14 @@ void doNurse()
 		exit(1);
 	}
 	close(rfd);
-	printf("done reading thread: %d\n",pthread_self());
+	//printf("done reading thread: %d\n",pthread_self());
 	sem_post(&pipeS);
 	//heal
-	curar_pokemones(tray.pokemons,tray.cant);
+	int aux = tray.pid*10 + id;
+	curar_pokemones(tray.pokemons, aux);
 	
 	//write in nurseS
-	printf("writing on nurseS thread: %d\n",pthread_self());
+	//printf("writing on nurseS thread: %d\n",pthread_self());
 	sem_wait(&pipeR);
 	pthread_kill(tray.id,DONE);
 	wfd = open(nurseS,O_WRONLY);
@@ -116,7 +126,7 @@ void doNurse()
 			perror("ERROR WRITING");
 			exit(1);
 	}
-	printf("done writing thread: %d\n",pthread_self());
+	//printf("done writing thread: %d\n",pthread_self());
 	close(wfd);
 	
 }	
@@ -128,7 +138,7 @@ void doServer()
 	CONNECTION c; 
 	pthread_mutex_lock(&connectionMutex);
 	acceptConnection(&c);
-	//printf("connection accepted\n");
+	printf("%-7d START\n", c.pid);
 	pthread_t stid;
 	pthread_create(&(stid),NULL,&handleConnection,(void*)&c);
 	//printf("there's a new thread\n");
@@ -141,6 +151,7 @@ void* handleConnection(void* s)
 	//printf("hello\n");
 	CONNECTION c;
 	memcpy(&c,s,sizeof(CONNECTION));
+	
 	pthread_mutex_unlock(&connectionMutex);
 	PACKET p;
 	//transport
@@ -149,6 +160,7 @@ void* handleConnection(void* s)
 	//transport
 	sendPacket( &c , &p, size);
 	endConnection( &c );
+	printf("%-7d END\n", c.pid);
 	int ret = 1;
 	//printf("die thread die\n");
 	pthread_exit(&ret);
@@ -156,7 +168,7 @@ void* handleConnection(void* s)
 
 void done(int sig)
 {
-	printf("DONE\n");
+	//printf("DONE\n");
 	signal(DONE,done);
 }
 
@@ -183,6 +195,8 @@ int processPacket( PACKET* p )
 			memcpy(tray.pokemons,pr->pokemons,tray.cant*sizeof(POKEMON));
 
 			tray.id = pthread_self();
+			tray.pid = pr->id;
+			
 			sem_wait(&healingMachine);
 			int wfd, rfd;			
 			
@@ -190,7 +204,7 @@ int processPacket( PACKET* p )
 			//write nurseR;
 
 			sem_wait(&pipeS);
-			printf("writing on nurseR thread: %d\n",pthread_self());
+			//printf("writing on nurseR thread: %d\n",pthread_self());
 			sem_post(&nursePillow);
 			wfd = open(nurseR,O_WRONLY);
 			int n = write(wfd,&tray,sizeof(TRAY));
@@ -209,7 +223,7 @@ int processPacket( PACKET* p )
 			//read nurseS;
 
 			rfd = open(nurseS,O_RDONLY);
-			printf("reding from nurseS thread: %d\n",pthread_self());
+			//printf("reding from nurseS thread: %d\n",pthread_self());
 			n = read(rfd,&tray,sizeof(TRAY));
 			if(n<0) {
 				perror("ERROR READING");
@@ -232,10 +246,10 @@ int processPacket( PACKET* p )
 			//printf("recibi pedido de adopción\n");
 			POKEMON aux;
 			sem_wait(sem_guarderia);
-			adoptar_pokemon(&aux);
+			print_adoptar_pokemon(&aux, pr->id);
 			sem_post(sem_guarderia);
 			memcpy(&(ps->pokemons[0]), &aux, sizeof(POKEMON));
-			printList();
+			//printList();
 			break;			
 		}
 		case REGALAR:
@@ -243,9 +257,9 @@ int processPacket( PACKET* p )
 			
 			//printf("recibi el pokemon %s para dar en adopcion\n", pr->pokemons[0].name);
 			sem_wait(sem_guarderia);
-			regalar_pokemon(pr->pokemons, 0);
+			print_regalar_pokemon(pr->pokemons, 0, pr->id);
 			sem_post(sem_guarderia);
-			printList();
+			//printList();
 			break;
 		}
 		default:
