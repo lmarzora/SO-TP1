@@ -6,15 +6,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-typedef struct node
-{
-	POKEMON pokemon;
-	struct node * next;
-} node_t;
-
-node_t * head;
-
-void last_print();
 void stdprint(int pid, char * cmd, int num, char* name, int life);
 
 static char *database_name = "/tmp/database";
@@ -102,16 +93,7 @@ int regalar_pokemon(POKEMON * pokemon, int index){
 	write(database_fd, buff, strlen(buff));
 	
 	write(database_fd, "\n", strlen("\n"));
-/*
-	if(head == NULL){
-		head = malloc(sizeof(node_t));
-		memcpy(&(head->pokemon), &(pokemon[index]), sizeof(POKEMON));
-	}else{
-		node_t * aux = malloc(sizeof(node_t));
-		memcpy(&(aux->pokemon), &(pokemon[index]), sizeof(POKEMON));
-		aux->next = head;
-		head = aux;
-	}*/
+
 	cant++;
 	return 1;
 }
@@ -123,44 +105,6 @@ int print_regalar_pokemon(POKEMON * pokemon, int index, int id){
 	return aux;
 
 }
-
-void printList(){
-//	node_t * current = head;
-
-	printf("\n------ EN ADOPCION  -------\n" );
-/*	while(current!=NULL){
-		printf("%s\n", current->pokemon.name);
-		current = current->next;
-	}*/
-	int database_fd;
-	if((database_fd = open(database_name, O_RDONLY)) == -1){
-		perror("fail opening database");
-	}
-
-	char name[50];
-	char buff[2];
-	buff[0] = 0;
-	buff[1] = 0;
-	int i = 0;
-
-	do{
-		if(read(database_fd, buff, 1)==0){
-			last_print();
-			return;
-		}
-		name[i] = buff[0];
-	}while(strcmp(buff,"\n") != 0);
-	name[--i] = 0;
-
-
-}
-
-void last_print(){
-	printf("---------------------------\n" );
-}
-
-
-
 
 int adoptar_pokemon(POKEMON * pokemon){
 	if(cant == 0){
@@ -194,22 +138,19 @@ int adoptar_pokemon(POKEMON * pokemon){
 
 	int n = 0;
 
-	//printf("ganador : %d\n", ganador);
+	
 
 	if(!is_valid_line(&another_fd)){
 		ganador++;
-		//printf("aumento ganador %d\n", ganador);
 	}
 	while(n < ganador){
 
 		read(other_fd, buff2, 1);
 		read(database_fd, buff, 1);
 		if(strcmp(buff, "\n") == 0){
-			//printf("llegue a new line\n");
 			n++;
 			if(!is_valid_line(&another_fd)){
 				ganador++;
-				//printf("aumento ganador %d\n", ganador);
 			}
 		}		
 	}
@@ -224,8 +165,6 @@ int adoptar_pokemon(POKEMON * pokemon){
 		answer[i++] = buff[0];
 	}while(strcmp(buff, ";") != 0);
 	answer[--i] = 0;
-
-	//printf("answer : %s\n",answer);
 
 	strcpy(pokemon->name, answer);
 
@@ -243,12 +182,83 @@ int adoptar_pokemon(POKEMON * pokemon){
 
 	cant--;
 
+	return 1;
+}
 
-/*	
+int print_adoptar_pokemon(POKEMON * pokemon, int id){
+	int aux = adoptar_pokemon(pokemon);
+	if(aux!=0)
+		stdprint(id, "adopt", cant, (*pokemon).name, (*pokemon).life);
+	return aux;
+}
+
+
+
+
+////OPC B: Base de datos es una linked list en memoria; no persiste
+
+/*
+
+typedef struct node
+{
+	POKEMON pokemon;
+	struct node * next;
+} node_t;
+
+node_t * head;
+
+int cant;
+
+int print_regalar_pokemon(POKEMON * pokemon, int index, int id){
+	int aux = regalar_pokemon(pokemon, index);
+	stdprint(id, "abandon", cant, pokemon[index].name, pokemon[index].life);
+	return aux;
+
+}
+int regalar_pokemon(POKEMON * pokemon, int index){
+
+	if(head == NULL){
+		head = malloc(sizeof(node_t));
+		memcpy(&(head->pokemon), &(pokemon[index]), sizeof(POKEMON));
+	}else{
+		node_t * aux = malloc(sizeof(node_t));
+		memcpy(&(aux->pokemon), &(pokemon[index]), sizeof(POKEMON));
+		aux->next = head;
+		head = aux;
+	}
+	cant++;
+	return 1;
+}
+
+void printList(){
+	node_t * current = head;
+
+	printf("\n------ EN ADOPCION  -------\n" );
+	while(current!=NULL){
+		printf("%s\n", current->pokemon.name);
+		current = current->next;
+	}
+	printf("---------------------------\n" );
+}
+
+int print_adoptar_pokemon(POKEMON * pokemon, int id){
+	if(cant == 0){
+		return 0;
+	}
+	int aux = adoptar_pokemon(pokemon);
+	stdprint(id, "adopt", cant, (*pokemon).name, (*pokemon).life);
+	return aux;
+}
+
+int adoptar_pokemon(POKEMON * pokemon){
+
+	int ganador = rand()%cant;
+	
 	node_t * current = head;
 	node_t * previous = NULL;
 
 	int i = 0;
+	
 	while(i!= ganador){
 		i++;
 		previous = current;
@@ -264,17 +274,11 @@ int adoptar_pokemon(POKEMON * pokemon){
 	
 	memcpy(pokemon, &(current->pokemon), sizeof(POKEMON));
 	free(current);
-*/
+
 	return 1;
 }
 
-int print_adoptar_pokemon(POKEMON * pokemon, int id){
-	int aux = adoptar_pokemon(pokemon);
-	if(aux!=0)
-		stdprint(id, "adopt", cant, (*pokemon).name, (*pokemon).life);
-	return aux;
-}
 
 
 
-
+*/

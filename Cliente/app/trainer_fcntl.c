@@ -80,7 +80,6 @@ int main(){
 }
 
 void cmd_curar_pokemones(POKEMON pokemones[6]){
-	requestConnection();
 	int i, cant = 0;
 	for(i=0; i< MAX_NUM_POKEMONS; i++){
 		int life = pokemones[i].life;
@@ -95,7 +94,6 @@ void cmd_curar_pokemones(POKEMON pokemones[6]){
 	curar_pokemones(pokemones, MAX_NUM_POKEMONS);
 	printf("Thank you for waiting\n");
 	printf("We've restored your Pokemons to full health\n");
-	endConnection();
 }
 
 void cmd_new_pokemones(POKEMON pokemones[6]){

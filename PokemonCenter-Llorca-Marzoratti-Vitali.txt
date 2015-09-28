@@ -1,0 +1,65 @@
+	--- Pokemon Center ---
+Jose Vitali: 54197
+Leandro Llorca: 54859
+Luis Marzoratti: 54449
+
+Sistemas Operativos
+28 de septiembre de 2015
+
+
+1) Como compilar y correr el programa
+	- Pararse sobre /SO-TP1
+	- Poner en la terminal "make _____"
+		-> _______: fifos, queues, shmem, signals, sockets, fcnlt
+	- Ejecutar /SO-TP1/trainer  y/o  /SO-TP1/server
+
+
+2) Contexto de la aplicación
+	La aplicación se basa en el juego Pokemon, donde un entrenador tiene varios Pokemones (como animales) y los utiliza para combatir y ganar medallas. Cuando los Pokemones se lastiman, son llevados a un PokemonCenter donde pueden ser curados. El cliente para nosotros es el entrenador, con sus Pokemones lastimados, y el servidor es el PokemonCenter que se encarga de recibir pokemones y curarlos. 
+	Agregamos también la funcionalidad de que exista una guarderia Pokemon, donde si un entrenador desea abandonar un Pokemon, puede dejarlo alli, y luego - si desea - puede adoptar un Pokemon aleatorio de la guarderia.
+
+	Hay ciertas reglas del mundo Pokemon que se deben respetar y eso implica ciertas restricciones dentro del programa. Estas reglas son:
+	- Un entrenador nunca puede estar sin un Pokemon
+		* No se puede curar los pokemones e irse - el cliente se traba hasta que vuelve a recibir los pokemones.
+		* No puede abandonar un Pokemon si solo tiene uno
+	- Un entrenador no puede tener mas de 6 Pokemones
+		* No se puede adoptar si ya tenes 6 pokemones
+	- Un entrenador no puede elegir qué Pokemon curar, debe curarlos a todos
+
+3) Las aplicaciones
+
+-> Trainer
+	Se pueden ejecutar los siguientes comandos
+		* heal: Cura a los pokemones (si ya no estan curados todos)
+		* abandon: Te muestra tus pokemones y te pregunta cual desea abandonar
+		* adopt: Adoptas un pokemon aleatorio del PokemonCenter
+			Solo se puede adoptar la misma cantidad de pokemones que abandonaste
+		* new pokemons: --Para testear-- Si se desea testear la aplicación con nuevos Pokemones y nuevas vidas; seria como resetear la aplicación.
+
+
+-> Server
+	El servidor muestra en forma de columnas todo lo que ejecuta. Las columnas son
+		* PID/fd: PID del proceso que ejecuta el comando, o en el caso de sockets, muestra el fd del socket cuando se conecta y desconecta.
+		* Command: Nombre del comando que ejecutó (heal, abandon, adopt). Se muestran dos
+				  nuevos comandos
+			- NEW: nueva conexión al servidor
+			- END: fin de conexión al servidor
+		* Num:
+			- Si el comando es "heal": muestra el numero de la maquina que esta curando a dicho pokemon (hay tres maquinas disponibles)
+			- Si el comando es "adopt" o "heal": muestra cuantos pokemones estan disponibles para adopción despues de ejecutar el comando.
+		* Name: Nombre del pokemon
+		* Life: Vida del pokemon
+
+
+4) Implementación
+
+	Todos los archivos estan dividos en carpetas que muestran las distintas capas de comunicación.
+	Tenemos
+		- app: Donde se encuentran las aplicaciones del entrenador y el Pokemon Center
+		- middle: Donde se prepara para mandar y recibir los datos y que hace con ellos
+		- transport: Donde efectivamente se manda los datos, maneja la conexión.
+	Un ejemplo de comunicación seria
+		trainer.c --> clstub.c --> shmem.c (cliente)--> shmem.c (servidor) --> server.c --> pokemonCenter.c 
+
+
+	Server.c genera tres "enfermeras" que reciben Pokemones para curar y los manda a las maquinas.Sólo hay tres maquinas disponibles, tal que hasta tres entrenadores pueden curar sus pokemones al mismo tiempo. Si viene un cuarto entrenador debera esperar a que alguna maquina se libere (similar al problema de los tres peluqueros).
