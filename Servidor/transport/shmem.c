@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <semaphore.h>
+#include <unistd.h>
 
 
 const static char *idserver = "/my_server";

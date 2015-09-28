@@ -4,6 +4,7 @@
 #include <string.h>
 #include <semaphore.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 typedef struct node
 {
@@ -14,23 +15,76 @@ typedef struct node
 node_t * head;
 
 void last_print();
+void stdprint(int pid, char * cmd, int num, char* name, int life);
 
 static char *database_name = "/tmp/database";
+static int boot = 0;
+static int cant = 0;
 
-int cant = 0;
+int is_valid_line(int *fd){
 
-int print_regalar_pokemon(POKEMON * pokemon, int index, int id){
+	char buff[2];
 
-	int aux = regalar_pokemon(pokemon, index);
-	stdprint(id, "abandon", cant, pokemon[index].name, pokemon[index].life);
-	return aux;
+
+	buff[0] = 'l';
+	buff[1] = 0;
+
+	int flag = 1;
+	while(strcmp(buff,"\n") != 0){
+		read(*fd, buff, 1);
+		if(!strcmp(buff, "&")){
+			//printf("no vale\n");
+			flag = 0;
+		}
+	}
+
+	return flag;
 
 }
+
+
+int contar_Pkmns(){
+	int database_fd;
+	if((database_fd = open(database_name, O_RDWR) ) == -1){
+		return 0;
+	}
+
+	int another_fd;
+
+	if((another_fd = open(database_name, O_RDWR)) == -1){
+		perror("fail opening database");
+	}
+
+	char buff[2];
+	buff[1] = 0;
+	buff[2] = 0;
+
+	int flag;
+	int n = 0, novalid = 0;
+
+
+	while(flag = read(database_fd, buff, 1) != 0){
+		if(strcmp(buff, "\n") == 0){
+			n++;
+			if(!is_valid_line(&another_fd)){
+				novalid++;
+			}
+		}		
+	}
+
+	return n-novalid;
+
+
+}
+
 int regalar_pokemon(POKEMON * pokemon, int index){
+	if(!boot){
+		cant = contar_Pkmns();
+		boot = 1;
+	}
 
-
-	printf("aceptando un nuevo pokemon...\n");
-	sleep(5);
+	//printf("aceptando un nuevo pokemon...\n");
+	sleep(1);
 
 	int database_fd;
 	if((database_fd = open(database_name, O_WRONLY|O_APPEND|O_CREAT, 0666)) == -1){
@@ -60,6 +114,14 @@ int regalar_pokemon(POKEMON * pokemon, int index){
 	}*/
 	cant++;
 	return 1;
+}
+
+int print_regalar_pokemon(POKEMON * pokemon, int index, int id){
+
+	int aux = regalar_pokemon(pokemon, index);
+	stdprint(id, "abandon", cant, pokemon[index].name, pokemon[index].life);
+	return aux;
+
 }
 
 void printList(){
@@ -99,17 +161,11 @@ void last_print(){
 
 
 
-int print_adoptar_pokemon(POKEMON * pokemon, int id){
+
+int adoptar_pokemon(POKEMON * pokemon){
 	if(cant == 0){
 		return 0;
 	}
-	int aux = adoptar_pokemon(pokemon);
-	stdprint(id, "adopt", cant, (*pokemon).name, (*pokemon).life);
-	return aux;
-}
-
-int adoptar_pokemon(POKEMON * pokemon){
-
 	int other_fd;
 	int database_fd;
 
@@ -138,22 +194,22 @@ int adoptar_pokemon(POKEMON * pokemon){
 
 	int n = 0;
 
-	printf("ganador : %d\n", ganador);
+	//printf("ganador : %d\n", ganador);
 
 	if(!is_valid_line(&another_fd)){
 		ganador++;
-		printf("aumento ganador %d\n", ganador);
+		//printf("aumento ganador %d\n", ganador);
 	}
 	while(n < ganador){
 
 		read(other_fd, buff2, 1);
 		read(database_fd, buff, 1);
 		if(strcmp(buff, "\n") == 0){
-			printf("llegue a new line\n");
+			//printf("llegue a new line\n");
 			n++;
 			if(!is_valid_line(&another_fd)){
 				ganador++;
-				printf("aumento ganador %d\n", ganador);
+				//printf("aumento ganador %d\n", ganador);
 			}
 		}		
 	}
@@ -169,7 +225,7 @@ int adoptar_pokemon(POKEMON * pokemon){
 	}while(strcmp(buff, ";") != 0);
 	answer[--i] = 0;
 
-	printf("answer : %s\n",answer);
+	//printf("answer : %s\n",answer);
 
 	strcpy(pokemon->name, answer);
 
@@ -212,27 +268,13 @@ int adoptar_pokemon(POKEMON * pokemon){
 	return 1;
 }
 
-
-int is_valid_line(int *fd){
-
-	char buff[2];
-
-
-	buff[0] = 'l';
-	buff[1] = 0;
-
-	int flag = 1;
-	while(strcmp(buff,"\n") != 0){
-		read(*fd, buff, 1);
-		if(!strcmp(buff, "&")){
-			("no vale\n");
-			flag = 0;
-		}
-	}
-
-	return flag;
-
+int print_adoptar_pokemon(POKEMON * pokemon, int id){
+	int aux = adoptar_pokemon(pokemon);
+	if(aux!=0)
+		stdprint(id, "adopt", cant, (*pokemon).name, (*pokemon).life);
+	return aux;
 }
+
 
 
 

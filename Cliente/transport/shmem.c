@@ -83,7 +83,7 @@ int sendPacket(CONNECTION* c, PACKET* p,int size){
 	int fd;
 	
 	if ( (fd = shm_open(sharedmem, O_RDWR, 0666)) == -1 )
-		fatal("sh_open");printf
+		fatal("sh_open");
 	if ( !(paquete = mmap(NULL, sizeof(PACKET), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0)) )
 		fatal("mmap");
 

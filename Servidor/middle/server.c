@@ -19,6 +19,7 @@ static pthread_t ntid[3];
 static sem_t nursePillow, healingMachine, pipeS , pipeR;
 static pthread_mutex_t connectionMutex;
 static sem_t * sem_guarderia;
+static char * sem_guarderia_name = "/mutexcenter";
 
 #define DONE 1
 
@@ -32,6 +33,8 @@ void fatal(char*);
 void done(int);
 void endServer(int);
 void printList();
+int print_regalar_pokemon(POKEMON * pokemon, int index, int id);
+int print_adoptar_pokemon(POKEMON * pokemon, int id);
 
 int main (void )
 {
@@ -43,10 +46,11 @@ int main (void )
 	printf("Num (heal) = Number of machine healing pokemon\n");
 	printf("Num (abandon/adopt) = Number of pokemon up for adoption\n");
 	printf("-----------------------------------------------------------\n");
-	printf("%-7s %-10s %-5s %-15s %s\n", "PID", "Command", "Num", " Name", "Life");
+	printf("%-7s %-10s %-5s %-15s %s\n", "PID/fd", "Command", "Num", " Name", "Life");
 	printf("-----------------------------------------------------------\n");
 	pthread_mutex_init(&connectionMutex,NULL);
-	if( !(sem_guarderia = sem_open("/mutexcenter", O_RDWR | O_CREAT, 0666, 1)))
+
+	if( !(sem_guarderia = sem_open(sem_guarderia_name, O_RDWR | O_CREAT, 0666, 1)))
 		fatal("Error creando semaforo guarderia\n");
 
 	while(1)
@@ -254,8 +258,6 @@ int processPacket( PACKET* p )
 		}
 		case REGALAR:
 		{
-			
-			//printf("recibi el pokemon %s para dar en adopcion\n", pr->pokemons[0].name);
 			sem_wait(sem_guarderia);
 			print_regalar_pokemon(pr->pokemons, 0, pr->id);
 			sem_post(sem_guarderia);
@@ -274,6 +276,9 @@ void endServer(int sig)
 {
 	remove(nurseS);	
 	remove(nurseR);
+	sem_close(sem_guarderia);
+	sem_unlink(sem_guarderia_name);
+	remove(sem_guarderia_name);
 	killServer(sig);
 	exit(1);
 }

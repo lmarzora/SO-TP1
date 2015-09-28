@@ -37,7 +37,7 @@ if ( (q_listener = mq_open(server_name, O_RDONLY|O_CREAT, 0666, &listener_attr))
 	fatal("Error mq_open q_listener");
 
 	mq_close(q_listener);
-	//printf("server born\n");
+	printf("Server born\n");
 
 	return;
 }

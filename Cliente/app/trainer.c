@@ -138,15 +138,11 @@ void cmd_adopt(POKEMON pokemones[6]){
 
 void generatePokemons(POKEMON pokemones[6]){
 	int i;
-	int cant = rand()%3 + 4;
-	for(i = 0; i < cant; i++){
+	for(i = 0; i < MAX_NUM_POKEMONS; i++){
 		strcpy(pokemones[i].name, POKEMON_NAMES[rand()%151]);
 		pokemones[i].life = rand()%70 + 1;
 	}
-	for(i = cant; i < 6; i++){
-		pokemones[i].life = -1;
-	}
-	cant_pokemones = cant;
+	cant_pokemones = MAX_NUM_POKEMONS;
 	saldo = 0;
 }
 
