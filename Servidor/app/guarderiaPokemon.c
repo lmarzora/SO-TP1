@@ -29,7 +29,7 @@ int print_regalar_pokemon(POKEMON * pokemon, int index, int id){
 int regalar_pokemon(POKEMON * pokemon, int index){
 
 
-	printf("aceptando un nuevo pokemon\n");
+	printf("aceptando un nuevo pokemon...\n");
 	sleep(5);
 
 	int database_fd;
