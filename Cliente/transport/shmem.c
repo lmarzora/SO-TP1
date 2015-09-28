@@ -13,10 +13,12 @@
 
 const static char* idserver = "/my_server";
 const static char * semConnectName = "/semconnect";
+const static char * semStartName = "/semstart";
 static char sharedmem[35];
 static sem_t* semSend;
 static sem_t* semReceive;
 static sem_t* semconnect;
+static sem_t* semstart;
 static PACKET * paquete;
 char semSendName[35];
 char semReceiveName[35];
@@ -30,6 +32,14 @@ void fatal(char* s){
 
 int requestConnection(CONNECTION* c) {
 
+	semstart = sem_open(semStartName,O_CREAT,0777, 1);
+	if(semstart == SEM_FAILED)
+	{
+		perror("fail");
+		exit(1);
+	}
+	
+	sem_wait(semstart);
 	
 	int fd;
 	int * memid;

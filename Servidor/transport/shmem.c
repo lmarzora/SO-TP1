@@ -12,6 +12,7 @@
 
 const static char *idserver = "/my_server";
 const static char * semConnectName = "/semconnect";
+const static char * semStartName = "/semstart";
 static int * memid_listener;
 
 void fatal(char*);
@@ -120,6 +121,14 @@ void acceptConnection(CONNECTION *c){
 	//sem_unlink(semConnectName);
 
 	c->pid = *memid_listener;
+
+	sem_t * semstart = sem_open(semStartName,O_CREAT,0777, 1);
+	if(semconnect == SEM_FAILED)
+	{
+		perror("fail");
+		exit(1);
+	}
+	sem_post(semstart);
 	
 	//printf("pid = %d\n", c->pid);
 
@@ -159,7 +168,10 @@ void killServer(int signo){
 	munmap(memid_listener, sizeof(int));
 	//sem_close(semconnect);
 	sem_unlink(semConnectName);
+	sem_unlink(semStartName);
+
 	remove(semConnectName);
+	remove(semStartName);
 	exit(1);
 
 }
