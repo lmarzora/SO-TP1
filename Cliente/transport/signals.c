@@ -9,30 +9,38 @@
 #include <unistd.h>
 
 
+
 const char *server_name = "/tmp/server_id";
 const char *server = "/tmp/my_server";
 static char semName[30];
-static flag_signal;
 static char clsv[35];
 static char svcl[35];
 char server_id[30];
 
+
+
+
+
 struct sigaction act;
 
-void handler(int sig, siginfo_t *siginfo, void *context);
+struct sigaction act2;
+
+void handler(int sig);
 
 int requestConnection(CONNECTION* c) {
 
-	sigemptyset(&act.sa_mask);
+	sigset_t signal_set;
+	int sig;
 
-	act.sa_sigaction = &handler;
-	act.sa_flags = SA_SIGINFO;
-
-	if (sigaction(SIGUSR1, &act, NULL) < 0) {
-		perror ("sigaction SIGUSR1");
-	}
+	sigemptyset (&signal_set);
+	sigaddset (&signal_set, SIGUSR1);
+	sigaddset (&signal_set, SIGUSR2);
 
 
+	sigprocmask(SIG_BLOCK, &signal_set, NULL);
+
+	signal(SIGUSR1, &handler);
+	signal(SIGUSR2, &handler);
 
 
 	sprintf(semName,"/sem");
@@ -42,8 +50,7 @@ int requestConnection(CONNECTION* c) {
 		perror("fail");
 		exit(1);
 	}
-	sem_wait(sem);
-
+	
 
 	int n;
 
@@ -62,17 +69,18 @@ int requestConnection(CONNECTION* c) {
 
 	close(server_id_fd);
 
-	printf("server id : %d\n", atoi(server_id));
+	//printf("server id : %d\n", atoi(server_id));
 
 	int server_fd;
-	if((server_fd = open(server, O_WRONLY)) == -1){
+	sem_wait(sem);
+	if((server_fd = open(server, O_WRONLY|O_APPEND)) == -1){
 		perror("fail");
 	}
 
 	char buff[30];
-	sprintf(buff, "%d", getpid());
+	sprintf(buff, "%d\n", getpid());
 
-	printf("my pid is : %s\n", buff);
+	//printf("my pid is : %s\n", buff);
 
 
 	if((n = write(server_fd, buff, strlen(buff))) == -1){
@@ -83,22 +91,27 @@ int requestConnection(CONNECTION* c) {
 
 	kill(atoi(server_id), SIGUSR1);
 
+	//printf("mande la señal\n");
 
-	flag_signal = 1;
+
 
 
 	sprintf(clsv,"/tmp/file_clsv-%d",getpid());
 	sprintf(svcl,"/tmp/file_svcl-%d",getpid());
-	sem_post(sem);
 
-	while(flag_signal);
+
+	sigset_t signal_set2;
+	int sig2;
+	sigaddset (&signal_set2, SIGUSR1);
+	
+	sigwait(&signal_set2, &sig2);
 
 
 	return 1;
 }
 
 int sendPacket(CONNECTION* c, PACKET* p,int size){
-	printf("sending packet\n");
+	//printf("sending packet\n");
 
 
 
@@ -119,28 +132,32 @@ int sendPacket(CONNECTION* c, PACKET* p,int size){
 		exit(1);
 	}
 	close(f_S);
-
-	kill(atoi(server_id), SIGUSR1);
-
-	printf("mande la señal\n");
-
+	//kill(atoi(server_id), SIGUSR1);
+	kill(atoi(server_id), SIGUSR2);
 	return n;
 }
 
 
-void handler(int sig, siginfo_t *siginfo, void *context){
-
-	flag_signal = 0;
+void handler(int sig){
+	
+	//printf("signal : %d\n",sig);
+	return;
 
 }
 
 int receivePacket(CONNECTION* c, PACKET* p,int size){
 
-	printf("receiving packet\n");
+	//printf("receiving packet\n");
 
-	flag_signal = 1;
 
-	while(flag_signal);
+
+//	while(flag_signal);
+
+	sigset_t signal_set;
+	int sig;
+	sigaddset (&signal_set, SIGUSR2);
+	
+	sigwait(&signal_set, &sig);
 
 	int f_R;
 
@@ -158,6 +175,7 @@ int receivePacket(CONNECTION* c, PACKET* p,int size){
 
 	int n = read(f_R, buff, sizeof (PACKET));
 
+	
 
 	if (n < 0)
   	{
@@ -175,7 +193,7 @@ int receivePacket(CONNECTION* c, PACKET* p,int size){
 
 int endConnection(CONNECTION* c){
 	remove(semName);
-	//remove(clsv);
-	//remove(svcl);
+	remove(clsv);
+	remove(svcl);
 	return 1;
 }

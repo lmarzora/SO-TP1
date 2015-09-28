@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 
+
 const static char* idserver = "/my_server";
 const static char * semConnectName = "/semconnect";
 static char sharedmem[35];
@@ -123,6 +124,7 @@ int endConnection(CONNECTION* c){
 	remove(semReceiveName);
 
 	munmap(paquete, sizeof(PACKET));
-
+	shm_unlink(sharedmem);
+	
 	return 1;
 }

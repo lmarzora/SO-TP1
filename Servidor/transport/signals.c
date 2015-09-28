@@ -6,29 +6,32 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <semaphore.h>
-
+#include <unistd.h>
 
 const char *server_name = "/tmp/my_server";
 const char *server_id = "/tmp/server_id";
 char sem_name_server[30];
 
+
+
+int listener;
+
 static pthread_mutex_t mutex;
 
-struct sigaction act;
+
+static int sig;
 
 void fatal(char*);
 
+static sem_t* sem;
 
+void handler(int sig){
 
-void handler(int sig, siginfo_t *siginfo, void *context){
+	sleep(2);
+	return;
 
-	pthread_mutex_lock(&mutex); //creo que esto no sirve para nada...
-
-//	sleep(1); //si hago esto se caga todo :/
-
-	printf("handling signal ______________________\n");
-
-	pthread_mutex_unlock(&mutex);
+	//printf("handling signal ______________________\n");
+	//printf("signal: %d\n",sig);
 }
 
 
@@ -38,33 +41,29 @@ void handler(int sig, siginfo_t *siginfo, void *context){
 void createServer(){
 
 
-	pthread_mutex_init(&mutex,NULL);
+	sigset_t signal_set;
 
-	sigemptyset(&act.sa_mask);
+	sigemptyset (&signal_set);
+	sigaddset (&signal_set, SIGUSR1);
+	sigaddset (&signal_set, SIGUSR2);
+	sigprocmask(SIG_BLOCK, &signal_set, NULL);
 
-	act.sa_sigaction = &handler;
-	act.sa_flags = SA_SIGINFO;
-
-	if (sigaction(SIGUSR1, &act, NULL) < 0) {
-		perror ("sigaction SIGUSR1");
-	}
-
+	signal(SIGUSR1, &handler);
+	signal(SIGUSR2, &handler);
 
 	sprintf(sem_name_server,"/sem");
-	sem_t* sem = sem_open(sem_name_server,O_CREAT,0777,0);
+	sem = sem_open(sem_name_server,O_CREAT,0777,0);
 	if(sem == SEM_FAILED)
 	{
 		perror("fail");
 		exit(1);
 	}
 
-	int listener;
+	listener;
 
 	if((listener = open(server_name, O_RDONLY|O_CREAT, 0666)) == -1){
 		fatal("Error open listener");
 	}
-
-	close(listener); 
 
 
 	int server_id_fd;
@@ -75,20 +74,17 @@ void createServer(){
 
 	sprintf(id_buff, "%d", getpid());
 
-	printf("buff : %s\n", id_buff);
+	//printf("buff : %s\n", id_buff);
 
 	int n;
 	if((n = write(server_id_fd, id_buff, strlen(id_buff))) == -1){
 		fatal("Error writing in server_id_fd");
 	}
 
-
 	sem_post(sem);
 }
 
 void acceptConnection(CONNECTION *c){
-
-	printf("BEGINNING CONNECTION\n");
 
 	sigset_t signal_set;
 	int sig;
@@ -96,38 +92,41 @@ void acceptConnection(CONNECTION *c){
 
 	sigemptyset (&signal_set);
 	sigaddset (&signal_set, SIGUSR1);
+	if(sigwait(&signal_set, &sig) < 0)
+		perror("error");
+
+	//printf("BEGINNING CONNECTION\n");
 
 
-	sigwait(&signal_set, &sig);
-
-
-	int listener = open(server_name, O_RDONLY);
+//	listener = open(server_name, O_RDONLY);
 
 	char buff[30];
 
 	int n;
 	int i = 0;
-		do{
-			n = read(listener, buff + i, 1);
-			if(n){
-				i++;
-			}
-		}while(n > 0);
+	do{
+		n = read(listener, buff + i, 1);
+		if(n){
+			i++;
+		}
+	}while(buff[i-1] != '\n');
 
+	
+	sem_post(sem);
 
 	c->pid = atoi(buff);
 
-	printf("El pid del cliente es c-> pid : %d\n", c->pid);
+	//printf("El pid del cliente es c-> pid : %d\n", c->pid);
 
 
 	char f_S[35], f_R[35];
 
-	printf("connecting to %d\n",c->pid);
+	//printf("connecting to %d\n",c->pid);
 
 	sprintf(f_R,"/tmp/file_clsv-%d",c->pid);
-	printf("%s\n",f_R);
+	//printf("%s\n",f_R);
 	sprintf(f_S,"/tmp/file_svcl-%d",c->pid);
-	printf("%s\n",f_S);
+	//printf("%s\n",f_S);
 
 
 
@@ -138,7 +137,7 @@ void acceptConnection(CONNECTION *c){
 		fatal("Error open f_S");
 
 
-	printf("fd_svcl : %d\n", fd_svcl);
+	//printf("fd_svcl : %d\n", fd_svcl);
 
 	close(fd_svcl);
 
@@ -152,9 +151,13 @@ void acceptConnection(CONNECTION *c){
 	close(fd_clsv);
 
 	kill(atoi(buff), SIGUSR1);
+	sigset_t signal_set2;
+	int sig2;
 
-	close(listener);
 
+	sigemptyset (&signal_set2);
+	sigaddset (&signal_set2, SIGUSR2);
+	sigwait(&signal_set2, &sig2);
 
 }
 
@@ -164,24 +167,21 @@ int receivePacket(CONNECTION* c, PACKET *p, int size){
 
 	char f_R[35];
 
-	printf("receiving fromd %d\n",c->pid);
+	//printf("receiving from %d\n",c->pid);
 
+	sigset_t signal_set;
+	int sig;
 
-        sigset_t signal_set;
-        int sig;
-
-
+	/*
 	sigemptyset (&signal_set);
-	sigaddset (&signal_set, SIGUSR1);
+	sigaddset(SIGUSR2);
 
-
-//	sigwait(&signal_set, &sig);
-
-
+	sigwait(&signal_set, &sig);
+	*/
 
 
 	sprintf(f_R,"/tmp/file_clsv-%d",c->pid);
-	printf("%s\n",f_R);
+	//printf("%s\n",f_R);
 
 	int fd_clsv;
 
@@ -211,7 +211,7 @@ int sendPacket(CONNECTION *c, PACKET *p,int size){
 	char f_S[35];
 
 	sprintf(f_S,"/tmp/file_svcl-%d",c->pid);
-	printf("%s\n",f_S);
+	//printf("%s\n",f_S);
 
 	int fd_svcl;
 
@@ -223,7 +223,7 @@ int sendPacket(CONNECTION *c, PACKET *p,int size){
 	char pid[30];
 	sprintf(pid, "%d", c->pid);
 
-	kill(atoi(pid), SIGUSR1);
+	kill(atoi(pid), SIGUSR2);
 
 
 	return n;
@@ -234,22 +234,12 @@ int sendPacket(CONNECTION *c, PACKET *p,int size){
 
 
 int endConnection(CONNECTION *c){
-	char f_S[35], f_R[35];
 
-	printf("ending connection\n");
-
-	sprintf(f_R,"/tmp/file_clsv-%d",c->pid);
-	printf("voy a matar a %s\n",f_R);
-	sprintf(f_S,"/tmp/file_svcl-%d",c->pid);
-	printf("voy a matar a %s\n",f_S);
-
-	remove(f_R);
-	remove(f_S);
 	return 1;
 }
 
 void killServer(int signo){
-	printf("killing server\n");
+	printf("\nKilling server -- GoodBye!\n");
 	remove(sem_name_server);
 	remove(server_name);
 	remove(server_id);

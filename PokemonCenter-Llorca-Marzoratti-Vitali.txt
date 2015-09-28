@@ -63,3 +63,8 @@ Sistemas Operativos
 
 
 	Server.c genera tres "enfermeras" que reciben Pokemones para curar y los manda a las maquinas.Sólo hay tres maquinas disponibles, tal que hasta tres entrenadores pueden curar sus pokemones al mismo tiempo. Si viene un cuarto entrenador debera esperar a que alguna maquina se libere (similar al problema de los tres peluqueros).
+
+	Originalmente se habia creado una "base de datos" de forma de Linked List, que vivia en memoria y desaparecia cuando moria el servidor. Esto funcionaba perfecto, sólo que cuando quisimos hacer la implementación de fcntl vimos que se tenia que compartir un archivo, asi que hicimos que la base de datos sea un archivo ubicado en /tmp/database.
+	Esta "base de datos" simplemente guarda el nombre del pokemon y su vida, y al retirarlo, le agrega un "&" al principio del nombre para indicar que ya no está en la guarderia.
+
+	En sockets se puede hablar entre computadoras, solo se debe cambiar del lado de cliente el IP con el que se comunica.

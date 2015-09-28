@@ -6,6 +6,7 @@
 #include "../../commons/API.h"
 #include <signal.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #define forever while(1)
 
@@ -188,7 +189,7 @@ void requestConnection(){
  memset (&lock, 0, sizeof(lock));
 	lock.l_type = F_WRLCK;
 	fcntl(database_id_fd, F_SETLKW, &lock);
-	printf("estoy en lock\n");
+	//printf("estoy en lock\n");
 
 }
 
@@ -198,7 +199,7 @@ void endConnection(){
  memset (&lock, 0, sizeof(lock));
 	lock.l_type = F_UNLCK;
 	fcntl (database_id_fd, F_SETLKW, &lock);
-	printf("sali del lock\n");
+	//printf("sali del lock\n");
 
 	close (database_id_fd);
 }
