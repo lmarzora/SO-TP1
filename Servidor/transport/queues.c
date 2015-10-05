@@ -31,7 +31,7 @@ void createServer(){
 //	listener_attr.mq_curmsgs = 0;
 
 
-	mq_unlink(server_name);
+//	mq_unlink(server_name);
 
 if ( (q_listener = mq_open(server_name, O_RDONLY|O_CREAT, 0666, &listener_attr)) == -1 )
 	fatal("Error mq_open q_listener");
